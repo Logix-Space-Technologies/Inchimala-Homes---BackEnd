@@ -8,3 +8,12 @@ const pool = mysql.createPool({
     password:'',
     database:'inchimala_db'
 })
+
+const caretakerModel={
+    insertCaretaker:(caretakerData,callback)=>{
+        const query='INSERT INTO caretaker SET ?';
+        pool.query(query,caretakerData,callback)
+    }
+}
+
+module.exports=caretakerModel
