@@ -3,6 +3,7 @@ const userModel=require("../models/user")
 const router=express.Router()
 const bcrypt = require("bcryptjs")
 
+
 //route to user register
 
 const hashFunction = async (password) => {
@@ -22,6 +23,33 @@ router.post('/signup',async(req,res)=>{
         res.status(201).send(`user added with ID : ${results.insertId}`)
     })
 
+});
+
+router.post('/userlogin', (req, res) => {
+    const { emailid,password } = req.body;
+
+    userModel.loginUser(emailid, (error, user) => {
+        if (error) {
+            return res.json({status: "Error"});
+        }
+        if (!user) {
+            return res.json({status: "Invalid Email ID"});
+        }
+        // Now student is found, let's compare the password
+        bcrypt.compare(password, user.password, (err, isMatch) => {
+            if (err) {
+                return res.json({status: "Error is"});
+            }
+            if (!isMatch) {
+                return res.json({status: "Invalid Password"});
+            }
+            // Successful login
+            return res.json({
+                status: "Success",
+                studentData: user
+            });
+        });
+    });
 });
 
 module.exports=router
