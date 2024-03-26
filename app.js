@@ -21,7 +21,7 @@ app.use("/api/user",userRoute)
 app.use("/apackagepi/",packagerouter)
 
 
+app.listen(3001,()=>{
+    console.log("Server Running")
 
-app.listen(3002,()=>{
-    console.log("Server Running...")
 })
