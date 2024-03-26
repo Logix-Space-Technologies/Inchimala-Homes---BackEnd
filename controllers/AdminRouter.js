@@ -9,9 +9,6 @@ const hashPasswordGenerator = async (pass) => {
     const salt = await bcrypt.genSalt(10);
     return bcrypt.hash(pass, salt)
 }
-
-
-
 router.post('/adminregister', async (req, res) => {
     console.log("test")
     try {
