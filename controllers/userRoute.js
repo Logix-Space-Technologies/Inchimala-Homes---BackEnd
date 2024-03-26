@@ -35,7 +35,7 @@ router.post('/userlogin', (req, res) => {
         if (!user) {
             return res.json({status: "Invalid Email ID"});
         }
-        // Now student is found, let's compare the password
+        // Now user is found, let's compare the password
         bcrypt.compare(password, user.password, (err, isMatch) => {
             if (err) {
                 return res.json({status: "Error is"});
