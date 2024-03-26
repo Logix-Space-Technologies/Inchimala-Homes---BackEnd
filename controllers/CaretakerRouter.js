@@ -15,4 +15,24 @@ router.post('/signup',(req,res)=>{
 
 });
 
+router.post("/login",(req,res)=>{
+    const { emailid,contactno } =req.body;
+    caretakerModel.loginCaretaker(emailid,(error, caretaker) => {
+        if(error)
+        {
+            return res.json({status:"Error"});
+        }
+        if(!caretaker)
+        {
+            return res.json({status:"Invalid Email ID"});
+        }
+        if(contactno !== caretaker.contactno)
+        {
+            return res.json({status:"Invalid password"});
+        }
+        return res.json({status:"success",caretakerData:caretaker});
+    });
+});
+
+
 module.exports=router
