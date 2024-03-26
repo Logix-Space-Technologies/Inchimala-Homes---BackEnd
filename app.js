@@ -9,6 +9,6 @@ app.use(express.json())
 
 app.use("/api/caretaker",caretakerrouter)
 
-app.listen(3002,()=>{
+app.listen(3001,()=>{
     console.log("Server Running")
 })
