@@ -1,17 +1,17 @@
 const mysql = require("mysql")
-
+require("dotenv").config()
 
 const pool = mysql.createPool({
-    host: 'localhost',
-    user: 'root',
-    password: '',
-    database: 'inchimala_db'
+    host:process.env.DB_HOST,
+    user:process.env.DB_USER,
+    database:process.env.DB_NAME,
+    port:process.env.DB_PORT
 })
 const eventModel = {
 
     insertEvent: (eventData, callback) => {
         console.log(eventData)
-        const query = 'INSERT INTO event SET ?';
+        const query = 'INSERT INTO activity SET ?';
         pool.query(query, eventData, callback)
     }
 
