@@ -1,19 +1,27 @@
 const mysql = require("mysql")
 
+require("dotenv").config()
 //MySQL connection
 
 const pool = mysql.createPool({
-    host:'localhost',
-    user:'root',
-    password:'',
-    database:'inchimala_db'
+    host:process.env.DB_HOST,
+    user:process.env.DB_USER,
+    database:process.env.DB_NAME,
+    port:process.env.DB_PORT
 })
 
 const foodModel={
     insertfood:(foodData,callback)=>{
         const query='INSERT INTO food SET ?';
         pool.query(query,foodData,callback)
+    },
+
+    searchFoodByType: (type, callback) => {
+        const query = 'SELECT * FROM food WHERE type = ?';
+        pool.query(query, [type], callback);
     }
+
+    
 }
 
 module.exports=foodModel

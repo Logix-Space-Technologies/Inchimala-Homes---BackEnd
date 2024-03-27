@@ -15,4 +15,22 @@ router.post('/addfood',(req,res)=>{
 
 });
 
+router.post('/searchfood', (req, res) => {
+    const { type } = req.body; // Extract type from request body
+    if (!type) {
+        return res.status(400).json({ error: 'enter the type of food' });
+    }
+
+    foodModel.searchFoodByType(type, (error, results) => {
+        if (error) {
+            res.status(500).send('Error searching for food' + error);
+            return;
+        }
+        res.status(200).send(results); 
+    });
+});
+
+
+
+
 module.exports=router
