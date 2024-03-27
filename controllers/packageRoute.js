@@ -36,4 +36,16 @@ router.post('/deletePackage', (req, res) => {
     });
 });
 
+router.post("/updatepackage", async (req, res) => {
+    let { packageid, ...rest } = req.body; 
+    packageModel.updatePackage(packageid, rest, (error, results) => { 
+        if (error) {
+            res.status(500).send('Error updating package: ' + error); 
+            return;
+        }
+        res.status(200).send('Package updated successfully');
+    });
+})
+
+
 module.exports=router
