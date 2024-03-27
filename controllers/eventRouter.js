@@ -14,4 +14,23 @@ router.post('/addevent', async (req, res) => {
     });
 });
 
+
+router.post('/searchactivity', (req, res) => {
+    const { type } = req.body; // Extract type from request body
+    if (!type) {
+        return res.status(400).json({ error: 'Please enter the activity name' });
+    }
+
+    eventModel.searchActivityByName(type, (error, results) => {
+        if (error) {
+            return res.status(500).send('Error searching for activity: ' + error);
+        }
+
+        if (results.length === 0) {
+            return res.status(404).json({ status:  'No such ativity' });
+            }
+        res.status(200).send(results); 
+    });
+});
+
 module.exports = router;
