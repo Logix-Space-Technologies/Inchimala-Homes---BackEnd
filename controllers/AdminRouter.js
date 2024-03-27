@@ -17,7 +17,7 @@ router.post('/adminregister', async (req, res) => {
         console.log(password)
         const hashedPassword = await hashPasswordGenerator(password);
         console.log(hashedPassword)
-        data.admin_password = hashedPassword;
+        data.password = hashedPassword;
         console.log(data)
         adminModel.insertAdmin(data, (error, results) => {
             if (error) {
