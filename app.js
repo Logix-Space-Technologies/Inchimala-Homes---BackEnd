@@ -21,7 +21,9 @@ app.use("/api/food",foodrouter)
 app.use("/api/user",userRoute)
 app.use("/api/package",packagerouter)
 
+
 app.use("/api/admin",adminrouter)
+
 
 
 
