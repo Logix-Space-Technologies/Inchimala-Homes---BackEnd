@@ -14,4 +14,18 @@ router.post('/addevent', async (req, res) => {
     });
 });
 
+router.post('/updateevent', async (req, res) => {
+    const activityId = req.body.activityid; // Extract activityid from the request body
+    const eventData = req.body;
+
+    eventModel.updateEvent(activityId, eventData, (error, results) => {
+        if (error) {
+            res.status(500).send('Error updating event data: ' + error);
+            return;
+        }
+        res.status(200).send(`Event with ID ${activityId} updated successfully`);
+    });
+});
+
+
 module.exports = router;
