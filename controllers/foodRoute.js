@@ -15,6 +15,7 @@ router.post('/addfood',(req,res)=>{
 
 });
 
+
 //router to search food
 
 
@@ -33,6 +34,30 @@ router.post('/searchfood', (req, res) => {
             return res.status(404).json({ status:  'No such type of food' });
             }
         res.status(200).send(results); 
+    });
+});
+
+router.post('/deletefood',(req,res)=>{
+    foodModel.deletefood(req.body.foodid,(error,results)=>{
+        if (error) {
+            res.status(500).send('Error deleting food items'+error)
+            return
+        }
+        res.status(201).send(`food deleted with ID : ${results.insertId}`)
+    })
+
+});
+
+
+router.post('/updatefood', (req, res) => {
+    const { foodid, ...updatedFoodData } = req.body;
+
+    foodModel.updateFood(foodid, updatedFoodData, (error, results) => {
+        if (error) {
+            res.status(500).send('Error updating food: ' + error);
+            return;
+        }
+        res.status(200).send(`Food with ID ${foodid} updated successfully`);
     });
 });
 

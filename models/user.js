@@ -1,18 +1,22 @@
 const mysql = require("mysql")
 
 //MySQL connection
-
 const pool = mysql.createPool({
-    host:'localhost',
-    user:'root',
-    password:'',
-    database:'inchimala_db'
+  host:process.env.DB_HOST,
+  user:process.env.DB_USER,
+  database:process.env.DB_NAME,
+  port:process.env.DB_PORT
 })
 
-const userModel={
-    insertuser:(userData,callback)=>{
-        const query='INSERT INTO user SET ?';
-        pool.query(query,userData,callback)
+
+const userModel = {
+    insertuser: (userData, callback) => {
+        const query = 'INSERT INTO user SET ?';
+        pool.query(query, userData, callback)
+    },
+    viewusers: (callback) => {
+        const query = 'SELECT * FROM user';
+        pool.query(query, callback);
     },
     loginUser: (emailid, callback) => {
         // Your user table needs to have an 'email' and 'password' column
@@ -33,3 +37,4 @@ const userModel={
 
 
 module.exports=userModel
+
