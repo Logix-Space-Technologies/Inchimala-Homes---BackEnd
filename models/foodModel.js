@@ -17,7 +17,12 @@ const foodModel={
     deletefood:(foodid,callback)=>{
         const query='DELETE FROM food WHERE foodid = ?';
         pool.query(query,foodid,callback)
+    },
+    updateFood: (foodId, updatedFoodData, callback) => {
+        const query = 'UPDATE food SET ? WHERE foodid = ?';
+        pool.query(query, [updatedFoodData, foodId], callback);
     }
+
 }
 
 
