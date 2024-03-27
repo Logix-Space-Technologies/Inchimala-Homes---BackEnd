@@ -27,4 +27,18 @@ router.post('/deletefood',(req,res)=>{
 });
 
 
+router.post('/updatefood', (req, res) => {
+    const { foodid, ...updatedFoodData } = req.body;
+
+    foodModel.updateFood(foodid, updatedFoodData, (error, results) => {
+        if (error) {
+            res.status(500).send('Error updating food: ' + error);
+            return;
+        }
+        res.status(200).send(`Food with ID ${foodid} updated successfully`);
+    });
+});
+
+
+
 module.exports=router
