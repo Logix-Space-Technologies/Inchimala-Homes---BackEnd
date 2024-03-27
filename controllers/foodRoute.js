@@ -15,22 +15,26 @@ router.post('/addfood',(req,res)=>{
 
 });
 
+//router to search food
+
+
 router.post('/searchfood', (req, res) => {
     const { type } = req.body; // Extract type from request body
     if (!type) {
-        return res.status(400).json({ error: 'enter the type of food' });
+        return res.status(400).json({ error: 'Please enter the type of food' });
     }
 
     foodModel.searchFoodByType(type, (error, results) => {
         if (error) {
-            res.status(500).send('Error searching for food' + error);
-            return;
+            return res.status(500).send('Error searching for food: ' + error);
         }
+
+        if (results.length === 0) {
+            return res.status(404).json({ status:  'No such type of food' });
+            }
         res.status(200).send(results); 
     });
 });
-
-
 
 
 module.exports=router
