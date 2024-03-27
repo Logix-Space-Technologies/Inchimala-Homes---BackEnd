@@ -1,27 +1,44 @@
-const express=require("express")
-const userModel=require("../models/user")
-const router=express.Router()
+const express = require("express")
+const userModel = require("../models/user")
+const router = express.Router()
 const bcrypt = require("bcryptjs")
 
 //route to user register
 
-const hashFunction = async (password) => {
-    const Salt = await bcrypt.genSalt(10)
-    return bcrypt.hash(password, Salt)
-}
-router.post('/signup',async(req,res)=>{
-    let data = req.body
-    let password = data.password
-    let hashedpassword=await hashFunction(password)
-    data.password = hashedpassword
-    userModel.insertuser(req.body,(error,results)=>{
-        if (error) {
-            res.status(500).send('Error inserting new user'+error)
-            return
-        }
-        res.status(201).send(`user added with ID : ${results.insertId}`)
-    })
+const hashPasswordGenerator = async (pass) => {
+    console.log(pass)
+    const salt = await bcrypt.genSalt(10);
+    return bcrypt.hash(pass, salt)
+};
 
+router.post('/signup', async (req, res) => {
+    try {
+        const { password } = req.body; // Destructure password directly from req.body
+        if (!password) {
+            return res.status(400).json({ message: "Password is required" });
+        }
+        
+        const hashedPassword = await hashPasswordGenerator(password);
+        console.log(hashedPassword) 
+        req.body.password = hashedPassword; // Update req.body directly
+        
+        userModel.insertuser(req.body, (error, results) => {
+            if (error) {
+                return res.status(500).json({ message: error.message });
+            }
+            res.json({ status: "success" });
+        });
+    } catch (err) {
+        res.status(500).json({ message: err.message });
+    }
 });
 
-module.exports=router
+
+router.get('/view', (req, res) => {
+    userModel.viewusers((error, results) => {
+        res.json(results)
+        console.log(results)
+    })
+});
+
+module.exports = router
