@@ -1,62 +1,47 @@
 const express = require("express")
-const userModel = require("../models/user")
-const router = express.Router()
+
+const adminModel = require("../models/adminModel")
 const bcrypt = require("bcryptjs")
-
-
-//route to user register
+const router = express.Router()
 
 const hashPasswordGenerator = async (pass) => {
     console.log(pass)
     const salt = await bcrypt.genSalt(10);
     return bcrypt.hash(pass, salt)
-};
-
-router.post('/signup', async (req, res) => {
+}
+router.post('/adminregister', async (req, res) => {
+    console.log("test")
     try {
-        const { password } = req.body; // Destructure password directly from req.body
-        if (!password) {
-            return res.status(400).json({ message: "Password is required" });
-        }
-        
+        let { data } = { "data": req.body };
+        let password = data.password;
+        console.log(password)
         const hashedPassword = await hashPasswordGenerator(password);
-        console.log(hashedPassword) 
-        req.body.password = hashedPassword; // Update req.body directly
-        
-        userModel.insertuser(req.body, (error, results) => {
+        console.log(hashedPassword)
+        data.password = hashedPassword;
+        console.log(data)
+        adminModel.insertAdmin(data, (error, results) => {
             if (error) {
                 return res.status(500).json({ message: error.message });
             }
-            res.json({ status: "success" });
+            res.json({ status: "success", data: results });
         });
     } catch (err) {
         res.status(500).json({ message: err.message });
     }
 });
 
-
-router.get('/view', (req, res) => {
-    userModel.viewusers((error, results) => {
-        res.json(results)
-        console.log(results)
-    })
-});
-
-
-module.exports = router
-=======
-router.post('/userlogin', (req, res) => {
+router.post('/adminlogin', (req, res) => {
     const { emailid,password } = req.body;
 
-    userModel.loginUser(emailid, (error, user) => {
+    adminModel.loginAdmin(emailid, (error, admin) => {
         if (error) {
             return res.json({status: "Error"});
         }
-        if (!user) {
+        if (!admin) {
             return res.json({status: "Invalid Email ID"});
         }
         // Now user is found, let's compare the password
-        bcrypt.compare(password, user.password, (err, isMatch) => {
+        bcrypt.compare(password, admin.password, (err, isMatch) => {
             if (err) {
                 return res.json({status: "Error is"});
             }
@@ -66,11 +51,11 @@ router.post('/userlogin', (req, res) => {
             // Successful login
             return res.json({
                 status: "Success",
-                studentData: user
+                adminData: admin
             });
         });
     });
 });
 
-module.exports=router
 
+module.exports = router
