@@ -14,7 +14,13 @@ const packageModel={
     insertPackage:(packageData,callback)=>{
         const query='INSERT INTO package SET ?';
         pool.query(query,packageData,callback)
+    },
+
+    updatePackage: (packageid, newData, callback) => {
+        const query = 'UPDATE package SET ? WHERE packageid = ?';
+        pool.query(query, [newData, packageid],callback) 
     }
+
 }
 
 module.exports=packageModel

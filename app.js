@@ -19,7 +19,7 @@ app.use("/api/caretaker",caretakerrouter)
 app.use("/api/food",foodrouter)
 
 app.use("/api/user",userRoute)
-app.use("/apackagepi/",packagerouter)
+app.use("/api/package",packagerouter)
 
 app.use("/api/admin",adminrouter)
 
