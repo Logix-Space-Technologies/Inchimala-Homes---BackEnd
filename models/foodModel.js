@@ -20,7 +20,7 @@ const foodModel={
     searchFoodByType: (type, callback) => {
         const query = 'SELECT * FROM food WHERE type = ?';
         pool.query(query, [type], callback);
-    }
+    },
 
     
 
