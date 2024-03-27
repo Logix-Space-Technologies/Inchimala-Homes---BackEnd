@@ -15,4 +15,16 @@ router.post('/addfood',(req,res)=>{
 
 });
 
+router.post('/deletefood',(req,res)=>{
+    foodModel.deletefood(req.body.foodid,(error,results)=>{
+        if (error) {
+            res.status(500).send('Error deleting food items'+error)
+            return
+        }
+        res.status(201).send(`food deleted with ID : ${results.insertId}`)
+    })
+
+});
+
+
 module.exports=router
