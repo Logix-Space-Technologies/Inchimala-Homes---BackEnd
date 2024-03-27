@@ -30,6 +30,32 @@ router.post('/adminregister', async (req, res) => {
     }
 });
 
+router.post('/adminlogin', (req, res) => {
+    const { emailid,password } = req.body;
+
+    adminModel.loginAdmin(emailid, (error, admin) => {
+        if (error) {
+            return res.json({status: "Error"});
+        }
+        if (!admin) {
+            return res.json({status: "Invalid Email ID"});
+        }
+        // Now user is found, let's compare the password
+        bcrypt.compare(password, admin.password, (err, isMatch) => {
+            if (err) {
+                return res.json({status: "Error is"});
+            }
+            if (!isMatch) {
+                return res.json({status: "Invalid Password"});
+            }
+            // Successful login
+            return res.json({
+                status: "Success",
+                adminData: admin
+            });
+        });
+    });
+});
 
 
 module.exports = router
