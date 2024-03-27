@@ -1,7 +1,6 @@
-const mysql=require("mysql")
+const mysql = require("mysql")
+
 //MySQL connection
-
-
 
 const pool = mysql.createPool({
     host:'localhost',
@@ -11,9 +10,9 @@ const pool = mysql.createPool({
 })
 
 const adminModel={
-    insertAdmin: (adminData, callback)=>{
+    insertadmin:(adminData,callback)=>{
         const query='INSERT INTO admin SET ?';
-        pool.query(query,adminData, callback);
+        pool.query(query,adminData,callback)
     }
 }
 
