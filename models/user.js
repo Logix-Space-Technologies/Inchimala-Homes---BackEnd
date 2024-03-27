@@ -17,17 +17,6 @@ const userModel = {
     viewusers: (callback) => {
         const query = 'SELECT * FROM user';
         pool.query(query, callback);
-    }
-}
-
-
-
-module.exports = userModel
-
-const userModel={
-    insertuser:(userData,callback)=>{
-        const query='INSERT INTO user SET ?';
-        pool.query(query,userData,callback)
     },
     loginUser: (emailid, callback) => {
         // Your user table needs to have an 'email' and 'password' column

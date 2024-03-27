@@ -44,7 +44,7 @@ router.get('/view', (req, res) => {
 
 
 module.exports = router
-=======
+
 router.post('/userlogin', (req, res) => {
     const { emailid,password } = req.body;
 
