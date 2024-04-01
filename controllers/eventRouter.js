@@ -42,9 +42,32 @@ router.post('/updateevent', async (req, res) => {
             res.status(500).send('Error updating event data: ' + error);
             return;
         }
+        
         res.status(200).send(`Event with ID ${activityId} updated successfully`);
     });
 });
+
+
+
+//to delete event
+
+router.post('/deleteEvent', (req, res) => {
+    const { activityid } = req.body; // Extract activityid from the request body
+   
+    eventModel.deleteEvent(activityid, (error, results) => {
+        if (!activityid) {
+            return res.status(400).send('Activity ID is required');
+        }
+        if (error) {
+            return res.status(500).send('Error deleting event: ' + error);
+        }
+        if (results.affectedRows === 0) {
+            return res.status(404).send('No event found with the given ID');
+        }
+        res.status(200).send(`Event deleted with ID: ${activityid}`);
+    });
+});
+
 
 
 
