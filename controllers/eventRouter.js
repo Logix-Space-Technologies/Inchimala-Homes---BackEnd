@@ -16,12 +16,12 @@ router.post('/addevent', async (req, res) => {
 
 
 router.post('/searchactivity', (req, res) => {
-    const { type } = req.body; // Extract type from request body
-    if (!type) {
+    const { name } = req.body; // Extract type from request body
+    if (!name) {
         return res.status(400).json({ error: 'Please enter the activity name' });
     }
 
-    eventModel.searchActivityByName(type, (error, results) => {
+    eventModel.searchActivity(name, (error, results) => {
         if (error) {
             return res.status(500).send('Error searching for activity: ' + error);
         }
