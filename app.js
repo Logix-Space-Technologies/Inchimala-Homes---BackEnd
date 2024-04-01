@@ -23,6 +23,8 @@ app.use("/api/user",userRoute)
 app.use("/api/package",packagerouter)
 app.use("/api/event",eventrouter)
 
+
+
 app.use("/api/admin",adminrouter)
 
 
