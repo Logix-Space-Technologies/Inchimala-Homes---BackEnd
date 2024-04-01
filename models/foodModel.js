@@ -33,6 +33,7 @@ const foodModel={
         pool.query(query, [updatedFoodData, foodId], callback);
     }
 
+    //food booking by user
     ,getFoodDetails: (foodid, callback) => {
         const query = 'SELECT * FROM food WHERE foodid = ?';
         pool.query(query, [foodid], (error, results) => {
