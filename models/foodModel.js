@@ -1,5 +1,6 @@
 const mysql = require("mysql")
 
+require("dotenv").config()
 //MySQL connection
 
 const pool = mysql.createPool({
@@ -14,6 +15,15 @@ const foodModel={
         const query='INSERT INTO food SET ?';
         pool.query(query,foodData,callback)
     },
+
+
+    searchFoodByType: (type, callback) => {
+        const query = 'SELECT * FROM food WHERE type = ?';
+        pool.query(query, [type], callback);
+    },
+
+    
+
     deletefood:(foodid,callback)=>{
         const query='DELETE FROM food WHERE foodid = ?';
         pool.query(query,foodid,callback)
@@ -22,6 +32,7 @@ const foodModel={
         const query = 'UPDATE food SET ? WHERE foodid = ?';
         pool.query(query, [updatedFoodData, foodId], callback);
     }
+
 
 }
 
