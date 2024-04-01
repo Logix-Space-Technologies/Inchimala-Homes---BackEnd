@@ -27,7 +27,11 @@ const caretakerModel={
               }
               return callback(null, results[0]);
         });
-    }
+    },
+    deletecaretaker:(caretakerid,callback)=>{
+        const query='DELETE FROM caretaker WHERE caretakerid = ?';
+        pool.query(query,caretakerid,callback)
+    },
 }
 
 module.exports=caretakerModel
