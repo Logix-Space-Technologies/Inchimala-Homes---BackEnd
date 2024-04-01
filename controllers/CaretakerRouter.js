@@ -34,5 +34,16 @@ router.post("/login",(req,res)=>{
     });
 });
 
+router.post('/deletecaretaker',(req,res)=>{
+    caretakerModel.deletecaretaker(req.body.caretakerid,(error,results)=>{
+        if (error) {
+            res.status(500).send('Error deleting caretaker'+error)
+            return
+        }
+        res.json({status:'caretaker deleted'})
+    })
+
+});
+
 
 module.exports=router
