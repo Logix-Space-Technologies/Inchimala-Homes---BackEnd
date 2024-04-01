@@ -14,9 +14,9 @@ const eventModel = {
         const query = 'INSERT INTO activity SET ?';
         pool.query(query, eventData, callback)
     },
-    updateEvent: (activityId, eventData, callback) => {
-        const query = 'UPDATE activity SET ? WHERE activityid = ?';
-        pool.query(query, [eventData, activityId], callback);
+    searchActivity: (name, callback) => {
+        const query = 'SELECT * FROM activity WHERE name = ?';
+        pool.query(query, [name], callback);
     }
 
 }
