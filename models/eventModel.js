@@ -13,12 +13,7 @@ const eventModel = {
         console.log(eventData)
         const query = 'INSERT INTO activity SET ?';
         pool.query(query, eventData, callback)
-    },
-    searchActivity: (name, callback) => {
-        const query = 'SELECT * FROM activity WHERE name = ?';
-        pool.query(query, [name], callback);
     }
-
 
 }
 module.exports = eventModel
