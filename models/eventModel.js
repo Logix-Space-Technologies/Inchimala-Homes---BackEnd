@@ -32,4 +32,5 @@ const eventModel = {
     }
 
 }
+}
 module.exports = eventModel
