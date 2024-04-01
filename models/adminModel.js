@@ -13,7 +13,8 @@ const adminModel={
     insertadmin:(adminData,callback)=>{
         const query='INSERT INTO admin SET ?';
         pool.query(query,adminData,callback)
-    }
+    },
+   
 }
 
 
