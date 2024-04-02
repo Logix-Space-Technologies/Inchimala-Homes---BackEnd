@@ -114,7 +114,7 @@ router.post('/bookfood', async (req, res) => {
                 foodid,
                 quantity,
                 totalprice: totalPrice,
-                status: 'order placed' // Assuming 'order placed' status is automatically set
+                status: 0 //order placed:0,order accepted:0,..
             };
 
             // Insert booking record
@@ -130,7 +130,7 @@ router.post('/bookfood', async (req, res) => {
                     foodname: foodDetails.name,
                     quantity,
                     totalprice: totalPrice,
-                    status: 'order placed'
+                    status: 0
                 };
 
                 res.status(201).json({ status: 'success', bookingDetails: responseData });
