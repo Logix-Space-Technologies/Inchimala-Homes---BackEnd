@@ -66,6 +66,15 @@ router.post('/searchpackage', (req, res) => {
     });
 });
 
+//to view packages
+
+router.get('/viewpackage', (req, res) => {
+    packageModel.viewPackage((error, results) => {
+        res.json(results)
+        console.log(results)
+    })
+});
+
 
 
 module.exports=router
