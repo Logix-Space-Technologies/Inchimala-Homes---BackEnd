@@ -46,8 +46,12 @@ const foodModel={
             // Return the first food found
             return callback(null, results[0]);
         });
-    }
+    },
 
+    viewFood: (callback) => {
+        const query = 'SELECT * FROM food';
+        pool.query(query, callback);
+    }
 
 
 
