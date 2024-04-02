@@ -68,6 +68,15 @@ router.post('/deleteEvent', (req, res) => {
     });
 });
 
+//to view events
+
+router.get('/viewEvent', (req, res) => {
+    eventModel.viewEvent((error, results) => {
+        res.json(results)
+        console.log(results)
+    })
+});
+
 
 
 
