@@ -25,6 +25,7 @@ router.post('/acceptBooking', (req, res) => {
 });
 
 
+
 //Reject Booking
 router.post('/rejectBooking', (req, res) => {
     var bookingid =req.body.bookingid
