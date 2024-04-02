@@ -9,7 +9,7 @@ const router=express.Router()
 router.post('/acceptBooking', (req, res) => {
     var bookingid =req.body.bookingid
 
-    bookingModel.rejectBooking(bookingid,(error,results)=>{
+    bookingModel.acceptBooking(bookingid,(error,results)=>{
         if(error){
             res.status(500).send('Error retrieving  data');
             return;
@@ -18,7 +18,7 @@ router.post('/acceptBooking', (req, res) => {
             res.status(200).json(results[0]);
         }
         else{
-            res.status(404).send(`Booking rejected with ID : ${bookingid}`);
+            res.status(404).send(`Booking accepted with ID : ${bookingid}`);
         }
        
     });
