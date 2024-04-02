@@ -30,7 +30,12 @@ const eventModel = {
     searchActivity: (name, callback) => {
         const query = 'SELECT * FROM activity WHERE name = ?';
         pool.query(query, [name], callback);
+    },
+    viewEvent: (callback) => {
+        const query = 'SELECT * FROM activity';
+        pool.query(query, callback);
     }
+
 
 
 }
