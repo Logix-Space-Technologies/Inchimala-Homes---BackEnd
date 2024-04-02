@@ -61,5 +61,15 @@ router.post('/updatefood', (req, res) => {
     });
 });
 
+//to view food details
+
+router.get('/viewfood', (req, res) => {
+    foodModel.viewFood((error, results) => {
+        res.json(results)
+        console.log(results)
+    })
+});
+
+
 
 module.exports=router
