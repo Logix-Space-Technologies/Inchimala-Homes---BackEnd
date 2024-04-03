@@ -54,7 +54,12 @@ const foodModel={
     viewFood: (callback) => {
         const query = 'SELECT * FROM food';
         pool.query(query, callback);
-    }
+    },
+    
+    viewFoodBooking: (callback) => {
+        const query = 'SELECT * FROM foodbooking';
+        pool.query(query, callback);
+    } 
 
 
 
