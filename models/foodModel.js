@@ -38,8 +38,31 @@ const foodModel={
         pool.query(query, callback);
     }
 
+    //food booking by user
+    ,getFoodDetails: (foodid, callback) => {
+        const query = 'SELECT * FROM food WHERE foodid = ?';
+        pool.query(query, [foodid], (error, results) => {
+            if (error) {
+                return callback(error, null);
+            }
+            if (results.length === 0) {
+                return callback(null, null);
+            }
+            // Return the first food found
+            return callback(null, results[0]);
+        });
+    },
+
+    viewFood: (callback) => {
+        const query = 'SELECT * FROM food';
+        pool.query(query, callback);
+    }
+
+
+
+
+
+
 
 }
-
-
 module.exports=foodModel

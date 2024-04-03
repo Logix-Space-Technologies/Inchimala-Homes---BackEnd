@@ -19,8 +19,12 @@ const bookingModel={
     rejectBooking:(bookingid,callback)=>{
         const query='UPDATE booking set status="2" WHERE bookingid=?';  //pending-status(0) , accepted-status(1) , rejected-status(2)
         pool.query(query,[bookingid],callback)
+    },
+    viewRoomBooking: (callback) => {
+        const query = 'SELECT * FROM booking';
+        pool.query(query, callback);
     }
-   
+
 }
 
 

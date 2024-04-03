@@ -45,5 +45,14 @@ router.post('/deletecaretaker',(req,res)=>{
 
 });
 
-
+router.post('/update', (req, res) => {
+    const { caretakerId, ...updatedData } = req.body;
+caretakerModel.updateCaretaker(caretakerId, updatedData, (error, results) => {
+        if (error) {
+            res.status(500).send('Error updating caretaker data: ' + error);
+            return;
+        }
+        res.status(200).send('Caretaker with ID ${caretakerId} updated successfully');
+    });
+});
 module.exports=router

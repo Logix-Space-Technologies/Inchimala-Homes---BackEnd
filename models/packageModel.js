@@ -27,7 +27,12 @@ const packageModel={
     searchPackage: (name, callback) => {
         const query = 'SELECT * FROM package WHERE name = ?';
         pool.query(query, [name], callback);
+    },
+    viewPackage: (callback) => {
+        const query = 'SELECT * FROM package';
+        pool.query(query, callback);
     }
+
 }
 
 
