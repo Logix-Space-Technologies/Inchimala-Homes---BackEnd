@@ -62,7 +62,6 @@ router.post('/updatefood', (req, res) => {
 });
 
 
-//to view Food Bookings
 
 router.get('/viewFoodBooking', (req, res) => {
     foodModel.viewFoodBooking((error, results) => {
@@ -70,6 +69,7 @@ router.get('/viewFoodBooking', (req, res) => {
         console.log(results)
     })
 });
+
 
 
 
@@ -82,6 +82,7 @@ router.get('/viewfood', (req, res) => {
         console.log(results)
     })
 });
+
 
 
 
