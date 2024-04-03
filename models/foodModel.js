@@ -58,5 +58,6 @@ const foodModel={
         pool.query(query,[foodid],callback)
     },
 
+
 }
 module.exports=foodModel

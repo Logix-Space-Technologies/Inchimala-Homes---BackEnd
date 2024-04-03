@@ -61,10 +61,10 @@ router.post('/updatefood', (req, res) => {
     });
 });
 
-//to view food details
 
-router.get('/viewfood', (req, res) => {
-    foodModel.viewFood((error, results) => {
+
+router.get('/viewFoodBooking', (req, res) => {
+    foodModel.viewFoodBooking((error, results) => {
         res.json(results)
         console.log(results)
     })
@@ -88,6 +88,21 @@ router.post('/rejectFoodBooking', (req, res) => {
        
     });
 });
+
+
+
+
+
+//to view food details
+
+router.get('/viewfood', (req, res) => {
+    foodModel.viewFood((error, results) => {
+
+        res.json(results)
+        console.log(results)
+    })
+});
+
 
 
 
