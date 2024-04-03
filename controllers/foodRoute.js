@@ -61,15 +61,21 @@ router.post('/updatefood', (req, res) => {
     });
 });
 
+
+//to view Food Bookings
+
+router.get('/viewFoodBooking', (req, res) => {
+    foodModel.viewFoodBooking((error, results) => {
+
 //to view food details
 
 router.get('/viewfood', (req, res) => {
     foodModel.viewFood((error, results) => {
+
         res.json(results)
         console.log(results)
     })
 });
-
 
 
 

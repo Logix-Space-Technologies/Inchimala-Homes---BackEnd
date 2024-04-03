@@ -31,6 +31,11 @@ const foodModel={
     updateFood: (foodId, updatedFoodData, callback) => {
         const query = 'UPDATE food SET ? WHERE foodid = ?';
         pool.query(query, [updatedFoodData, foodId], callback);
+    },
+    
+    viewFoodBooking: (callback) => {
+        const query = 'SELECT * FROM foodbooking';
+        pool.query(query, callback);
     }
 
     //food booking by user
