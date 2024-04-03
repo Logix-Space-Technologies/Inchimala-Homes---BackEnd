@@ -103,6 +103,25 @@ router.get('/viewfood', (req, res) => {
     })
 });
 
+//Reject Food Booking
+router.post('/acceptFoodBooking', (req, res) => {
+    var foodid =req.body.foodid
+
+    foodModel.acceptFoodBooking(foodid,(error,results)=>{
+        if(error){
+            res.status(500).send('Error retrieving  data');
+            return;
+        }
+        if(results.length > 0){
+            res.status(200).json(results[0]);
+        }
+        else{
+            res.status(404).send(`Booking accepted with ID : ${foodid}`);
+        }
+       
+    });
+});
+
 
 
 
