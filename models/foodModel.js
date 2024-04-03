@@ -31,10 +31,10 @@ const foodModel={
     updateFood: (foodId, updatedFoodData, callback) => {
         const query = 'UPDATE food SET ? WHERE foodid = ?';
         pool.query(query, [updatedFoodData, foodId], callback);
-    }
+    },
 
     //food booking by user
-    ,getFoodDetails: (foodid, callback) => {
+    getFoodDetails: (foodid, callback) => {
         const query = 'SELECT * FROM food WHERE foodid = ?';
         pool.query(query, [foodid], (error, results) => {
             if (error) {
@@ -51,12 +51,12 @@ const foodModel={
     viewFood: (callback) => {
         const query = 'SELECT * FROM food';
         pool.query(query, callback);
-    }
+    },
 
-
-
-
-
+    rejectFoodBooking:(foodid,callback)=>{
+        const query='UPDATE foodbooking set status="2" WHERE foodid=?';  // rejected-status(2)
+        pool.query(query,[foodid],callback)
+    },
 
 }
 module.exports=foodModel
