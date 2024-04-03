@@ -69,6 +69,11 @@ const foodModel={
         pool.query(query,[foodid],callback)
     },
 
+    acceptFoodBooking:(foodid,callback)=>{
+        const query='UPDATE foodbooking set status="1" WHERE foodid=?';  //pending-status(0) , accepted-status(1) , rejected-status(2)
+        pool.query(query,[foodid],callback)
+    }
+
 
 }
 module.exports=foodModel
