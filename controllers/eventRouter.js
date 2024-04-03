@@ -96,6 +96,25 @@ router.post('/rejectActivityBooking', (req, res) => {
     });
 });
 
+//Accept Activity Booking
+router.post('/acceptActivityBooking', (req, res) => {
+    var id =req.body.id
+
+    eventModel.acceptActivityBooking(id,(error,results)=>{
+        if(error){
+            res.status(500).send('Error retrieving  data');
+            return;
+        }
+        if(results.length > 0){
+            res.status(200).json(results[0]);
+        }
+        else{
+            res.status(404).send(`Activity Booking accepted with ID : ${id}`);
+        }
+       
+    });
+});
+
 
 
 
