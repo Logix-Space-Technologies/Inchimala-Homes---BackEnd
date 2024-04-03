@@ -63,6 +63,15 @@ router.post('/updatefood', (req, res) => {
 
 
 
+router.get('/viewFoodBooking', (req, res) => {
+    foodModel.viewFoodBooking((error, results) => {
+        res.json(results)
+        console.log(results)
+    })
+});
+
+
+
 
 //to view food details
 
