@@ -1,5 +1,6 @@
 const express=require("express")
 const bookingModel=require("../models/bookingModel")
+const packageModel=require("../models/packageModel")
 
 const router=express.Router()
 
@@ -53,6 +54,47 @@ router.post('/rejectBooking', (req, res) => {
        
     });
 });
+
+router.post('/datecheack', (req, res) => {
+    const { checkin, checkout } = req.body;
+
+    bookingModel.datecheack(checkin, checkout, (error, result1) => {
+        if (error) {
+            console.error("Error retrieving data:", error);
+            res.json({ status: 'Error retrieving data' });
+        } else {
+            let excludedPackageIds = [];
+            if (result1.length > 0) {
+                // Extract package IDs from all conflicting bookings
+                excludedPackageIds = result1.map(booking => booking.packageid);
+            }
+
+            // If there are conflicting bookings, exclude them from available packages
+            if (excludedPackageIds.length > 0) {
+                packageModel.viewavailablePackage(excludedPackageIds, (error, result) => {
+                    if (error) {
+                        console.error("Error retrieving data:", error);
+                        res.json({ status: 'Error retrieving data' });
+                    } else {
+                        res.status(200).json(result);
+                    }
+                });
+            } else {
+                // If there are no conflicting bookings, return all packages
+                packageModel.viewPackage((error, result) => {
+                    if (error) {
+                        console.error("Error retrieving data:", error);
+                        res.json({ status: 'Error retrieving data' });
+                    } else {
+                        res.status(200).json(result);
+                    }
+                });
+            }
+        }
+    });
+});
+
+  
 
 
 

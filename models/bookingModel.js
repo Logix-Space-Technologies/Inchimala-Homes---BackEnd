@@ -23,7 +23,12 @@ const bookingModel={
     viewRoomBooking: (callback) => {
         const query = 'SELECT * FROM booking';
         pool.query(query, callback);
-    }
+    },
+    datecheack: (checkin, checkout, callback) => {
+        const query = 'SELECT packageid FROM booking WHERE (checkin >= ? AND checkin <= ?) OR (checkout >= ? AND checkout <= ?) OR (checkin <= ? AND checkout >= ?);';
+        pool.query(query, [checkin, checkout, checkin, checkout, checkin, checkout], callback);
+      }
+      
 
 }
 
