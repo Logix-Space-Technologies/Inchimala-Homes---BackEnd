@@ -116,6 +116,27 @@ router.post('/acceptActivityBooking', (req, res) => {
 });
 
 
+router.post('/updateActivityBookingStatus', (req, res) => {
+    const id = req.body.id;
+    const newStatus = req.body.newStatus;
+
+    // Check if the new status is valid (3 or 4)
+    if (![3, 4].includes(newStatus)) {
+        res.status(400).send('Invalid new status');
+        return;
+    }
+
+        // Update the activity booking status to the new status
+        eventModel.updateActivityBookingStatus(id, newStatus, (error, results) => {
+            if (error) {
+                res.status(500).send('Error updating activity booking status');
+                return;
+            }
+            res.status(200).send(`Activity booking status updated to ${newStatus} for ID: ${id}`);
+        });
+    });
+
+
 
 
 module.exports = router;
