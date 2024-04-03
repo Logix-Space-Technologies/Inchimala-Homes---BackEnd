@@ -53,6 +53,17 @@ const foodModel={
         pool.query(query, callback);
     },
 
+    
+    viewFoodBooking: (callback) => {
+        const query = 'SELECT * FROM foodbooking';
+        pool.query(query, callback);
+    } ,
+
+
+
+
+
+
     rejectFoodBooking:(foodid,callback)=>{
         const query='UPDATE foodbooking set status="2" WHERE foodid=?';  // rejected-status(2)
         pool.query(query,[foodid],callback)
