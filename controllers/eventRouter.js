@@ -79,9 +79,9 @@ router.get('/viewEvent', (req, res) => {
 
 //Reject Activity Booking
 router.post('/rejectActivityBooking', (req, res) => {
-    var activityid =req.body.activityid
+    var id =req.body.id
 
-    eventModel.rejectActivityBooking(activityid,(error,results)=>{
+    eventModel.rejectActivityBooking(id,(error,results)=>{
         if(error){
             res.status(500).send('Error retrieving  data');
             return;
@@ -90,7 +90,7 @@ router.post('/rejectActivityBooking', (req, res) => {
             res.status(200).json(results[0]);
         }
         else{
-            res.status(404).send(`Activity Booking rejected with ID : ${activityid}`);
+            res.status(404).send(`Activity Booking rejected with ID : ${id}`);
         }
        
     });
