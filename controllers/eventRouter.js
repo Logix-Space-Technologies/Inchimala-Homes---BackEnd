@@ -68,6 +68,74 @@ router.post('/deleteEvent', (req, res) => {
     });
 });
 
+//to view events
+
+router.get('/viewEvent', (req, res) => {
+    eventModel.viewEvent((error, results) => {
+        res.json(results)
+        console.log(results)
+    })
+});
+
+//Reject Activity Booking
+router.post('/rejectActivityBooking', (req, res) => {
+    var id =req.body.id
+
+    eventModel.rejectActivityBooking(id,(error,results)=>{
+        if(error){
+            res.status(500).send('Error retrieving  data');
+            return;
+        }
+        if(results.length > 0){
+            res.status(200).json(results[0]);
+        }
+        else{
+            res.status(404).send(`Activity Booking rejected with ID : ${id}`);
+        }
+       
+    });
+});
+
+//Accept Activity Booking
+router.post('/acceptActivityBooking', (req, res) => {
+    var id =req.body.id
+
+    eventModel.acceptActivityBooking(id,(error,results)=>{
+        if(error){
+            res.status(500).send('Error retrieving  data');
+            return;
+        }
+        if(results.length > 0){
+            res.status(200).json(results[0]);
+        }
+        else{
+            res.status(404).send(`Activity Booking accepted with ID : ${id}`);
+        }
+       
+    });
+});
+
+
+router.post('/updateActivityBookingStatus', (req, res) => {
+    const id = req.body.id;
+    const newStatus = req.body.newStatus;
+
+    // Check if the new status is valid (3 or 4)
+    if (![3, 4].includes(newStatus)) {
+        res.status(400).send('Invalid new status');
+        return;
+    }
+
+        // Update the activity booking status to the new status
+        eventModel.updateActivityBookingStatus(id, newStatus, (error, results) => {
+            if (error) {
+                res.status(500).send('Error updating activity booking status');
+                return;
+            }
+            res.status(200).send(`Activity booking status updated to ${newStatus} for ID: ${id}`);
+        });
+    });
+
 
 
 

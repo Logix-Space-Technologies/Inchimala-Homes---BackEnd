@@ -30,7 +30,28 @@ const eventModel = {
     searchActivity: (name, callback) => {
         const query = 'SELECT * FROM activity WHERE name = ?';
         pool.query(query, [name], callback);
+    },
+    viewEvent: (callback) => {
+        const query = 'SELECT * FROM activity';
+        pool.query(query, callback);
+    },
+
+    rejectActivityBooking:(id,callback)=>{
+        const query='UPDATE activitybooking set status="2" WHERE id=?';  //pending-status(0) , accepted-status(1) , rejected-status(2)
+        pool.query(query,[id],callback)
+    },
+
+    acceptActivityBooking:(id,callback)=>{
+        const query='UPDATE activitybooking set status="1" WHERE id=?';  //pending-status(0) , accepted-status(1) , rejected-status(2)
+        pool.query(query,[id],callback)
+    },
+    updateActivityBookingStatus: (id, newStatus, callback) => {
+        const query = 'UPDATE activitybooking SET status=? WHERE id=?';//ongoing-status(3),completed-status(4)
+        pool.query(query, [newStatus, id], callback);
     }
+    
+    
+
 
 
 }

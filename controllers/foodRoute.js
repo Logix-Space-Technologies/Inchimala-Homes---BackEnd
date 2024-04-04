@@ -130,3 +130,89 @@ router.post('/bookfood', async (req, res) => {
 
 
 module.exports = router
+
+router.get('/viewFoodBooking', (req, res) => {
+    foodModel.viewFoodBooking((error, results) => {
+        res.json(results)
+        console.log(results)
+    })
+});
+
+//Reject Food Booking
+router.post('/rejectFoodBooking', (req, res) => {
+    var foodid =req.body.foodid
+
+    foodModel.rejectFoodBooking(foodid,(error,results)=>{
+        if(error){
+            res.status(500).send('Error retrieving  data');
+            return;
+        }
+        if(results.length > 0){
+            res.status(200).json(results[0]);
+        }
+        else{
+            res.status(404).send(`Booking rejected with ID : ${foodid}`);
+        }
+       
+    });
+});
+
+
+
+
+
+//to view food details
+
+router.get('/viewfood', (req, res) => {
+    foodModel.viewFood((error, results) => {
+
+        res.json(results)
+        console.log(results)
+    })
+});
+
+//Reject Food Booking
+router.post('/acceptFoodBooking', (req, res) => {
+    var foodid =req.body.foodid
+
+    foodModel.acceptFoodBooking(foodid,(error,results)=>{
+        if(error){
+            res.status(500).send('Error retrieving  data');
+            return;
+        }
+        if(results.length > 0){
+            res.status(200).json(results[0]);
+        }
+        else{
+            res.status(404).send(`Booking accepted with ID : ${foodid}`);
+        }
+       
+    });
+});
+
+//update food booking status
+
+router.post('/updateFoodBookingStatus', (req, res) => {
+    const id = req.body.id;
+    const newStatus = req.body.newStatus;
+    // Validate the status
+    if (![3, 4, 5].includes(newStatus)) {
+        return res.status(400).json({ error: 'Invalid status provided' });
+    }
+
+    foodModel.updateFoodBookingStatus(id, newStatus, (error, results) => {
+        if (error) {
+            return res.status(500).send('Error updating food booking status: ' + error);
+        }
+
+        res.status(200).send(`Food booking status updated to ${newStatus} for ID: ${id}`);
+    });
+});
+
+
+
+
+
+
+module.exports=router
+
