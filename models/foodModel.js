@@ -33,7 +33,9 @@ const foodModel={
         pool.query(query, [updatedFoodData, foodId], callback);
     },
 
+    
     //food booking by user
+
     getFoodDetails: (foodid, callback) => {
         const query = 'SELECT * FROM food WHERE foodid = ?';
         pool.query(query, [foodid], (error, results) => {
@@ -48,6 +50,27 @@ const foodModel={
         });
     },
 
+
+//FOOD BOOKING BY USER
+
+    bookFood: (bookingData, callback) => {
+        const query = 'INSERT INTO foodbooking SET ?';
+        pool.query(query, bookingData, callback);
+    },
+  
+    getUserDetails: (userid, callback) => {
+      const query = 'SELECT * FROM user WHERE userid = ?';
+      pool.query(query, [userid], (error, results) => {
+          if (error) {
+              return callback(error, null);
+          }
+          if (results.length === 0) {
+              return callback(null, null); // No user found with the given ID
+          }
+          return callback(null, results[0]); // Return the first user found
+      });
+    },
+
     viewFood: (callback) => {
         const query = 'SELECT * FROM food';
         pool.query(query, callback);
@@ -58,11 +81,6 @@ const foodModel={
         const query = 'SELECT * FROM foodbooking';
         pool.query(query, callback);
     } ,
-
-
-
-
-
 
     rejectFoodBooking:(foodid,callback)=>{
         const query='UPDATE foodbooking set status="2" WHERE foodid=?';  // rejected-status(2)
