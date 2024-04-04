@@ -94,6 +94,17 @@ router.post('/datecheack', (req, res) => {
         }
     });
 });
+router.post('/roombooking',(req,res)=>{
+    bookingModel.RoomBooking(req.body,(error,results)=>{
+        if (error) {
+            res.status(500).send('Booking unsuccessfull'+error)
+            return
+        }
+        res.status(200).send(`Booking successfull : ${results.insertId}`)
+    })
+
+});
+
 
 
 
