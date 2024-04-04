@@ -54,6 +54,16 @@ router.post('/rejectBooking', (req, res) => {
     });
 });
 
+//To View Accepeted Room Bookings
+
+router.get('/viewAcceptedRoomBooking', (req, res) => {
+    bookingModel.viewAcceptedRoomBooking((error, results) => {
+        res.json(results)
+        console.log(results)
+    })
+});
+
+
 
 
 
