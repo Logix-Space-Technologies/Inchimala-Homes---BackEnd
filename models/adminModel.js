@@ -6,7 +6,8 @@ const pool = mysql.createPool({
     host:'localhost',
     user:'root',
     password:'',
-    database:'inchimala_db'
+    database:'inchimala_db',
+    port:process.env.DB_PORT
 })
 
 const adminModel={
