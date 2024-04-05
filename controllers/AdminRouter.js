@@ -2,6 +2,7 @@ const express=require("express")
 const adminModel=require("../models/adminModel")
 const router=express.Router()
 const bcrypt = require("bcryptjs")
+const jwt = require("jsonwebtoken")
 
 
 //route to admin register
@@ -44,13 +45,25 @@ router.post('/adminlogin', (req, res) => {
             if (!isMatch) {
                 return res.json({status: "Invalid Password"});
             }
-            // Successful login
+            jwt.sign({email:emailid},"inchimalaAdminLogin",{expiresIn:"1d"},(error,admintoken)=>{
+                if (error) {
+
+                    res.json(
+                        {status : "error",
+                        "error":error
+                    })
+                }
+                else{
+                     // Successful login
             return res.json({
                 status: "Success",
-                adminData: admin
+                adminData: admin,
+                "token":admintoken
             });
-        });
+                } 
+        })
     });
+});
 });
 
 
