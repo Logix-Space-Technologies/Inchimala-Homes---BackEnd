@@ -66,7 +66,7 @@ router.get('/viewAcceptedBooking', (req, res) => {
 
   
   
-router.post('/datecheack', (req, res) => {
+router.post('/datecheck', (req, res) => {
     const { checkin, checkout } = req.body;
 
     bookingModel.datecheack(checkin, checkout, (error, result1) => {
