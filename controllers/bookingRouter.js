@@ -54,6 +54,18 @@ router.post('/rejectBooking', (req, res) => {
     });
 });
 
+
+//To View Accepeted Room Bookings
+
+router.get('/viewAcceptedBooking', (req, res) => {
+    bookingModel.viewAcceptedBooking((error, results) => {
+         res.status(404).send('No accepted bookings found');
+        }
+    });
+});
+
+  
+  
 router.post('/datecheack', (req, res) => {
     const { checkin, checkout } = req.body;
 
@@ -119,10 +131,12 @@ router.get('/viewRejectedBooking', (req, res) => {
         if (results.length > 0) {
             res.status(200).json(results);
         } else {
+
             res.status(404).send('No rejected bookings found');
         }
     });
 });
+
 
 
 
