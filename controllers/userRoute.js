@@ -3,7 +3,7 @@ const userModel = require("../models/user")
 const foodModel=require("../models/foodModel")
 const router = express.Router()
 const bcrypt = require("bcryptjs")
-
+const jwt = require("jsonwebtoken")
 
 //route to user register
 
@@ -64,19 +64,29 @@ router.post('/userlogin', (req, res) => {
             if (!isMatch) {
                 return res.json({status: "Invalid Password"});
             }
-            // Successful login
+            
+            jwt.sign({email:emailid},"inchimalaUserLogin",{expiresIn:"1d"},(error,token)=>{
+                if (error) {
+
+                    res.json(
+                        {status : "error",
+                        "error":error
+                    })
+                } else {
+                    
+                // Successful login
             return res.json({
                 status: "Success",
-                studentData: user
-            });
+                userData: user,
+                "token" : token
+            }); 
+
+                }
+            })
+
         });
     });
 });
-
-
-
-
-
 
 
 

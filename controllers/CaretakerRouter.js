@@ -1,6 +1,6 @@
 const express=require("express")
 const caretakerModel=require("../models/caretakerModel")
-
+const jwt = require("jsonwebtoken")
 const router=express.Router()
 
 //route to member register
@@ -30,7 +30,22 @@ router.post("/login",(req,res)=>{
         {
             return res.json({status:"Invalid password"});
         }
-        return res.json({status:"success",caretakerData:caretaker});
+        jwt.sign({email:emailid},"inchimalaCaretakerLogin",{expiresIn:"1d"},(error,caretakertoken)=>{
+            if (error) {
+
+                res.json(
+                    {status : "error",
+                    "error":error
+                })
+            }
+            else{
+                return res.json({
+                    status:"success",
+                    caretakerData:caretaker,
+                    "token":caretakertoken
+                });
+            }
+        });
     });
 });
 
