@@ -32,6 +32,10 @@ const bookingModel={
     const query='INSERT INTO booking SET ?';
     pool.query(query,BookingData,callback)
 },
+viewRejectedBooking: (callback) => {
+    const query = 'SELECT * FROM booking WHERE status="2"'; // Filter by rejected bookings
+    pool.query(query, callback);
+}
 }
 
 
