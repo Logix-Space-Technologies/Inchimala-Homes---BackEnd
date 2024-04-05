@@ -69,7 +69,7 @@ router.get('/viewAcceptedBooking', (req, res) => {
 router.post('/datecheck', (req, res) => {
     const { checkin, checkout } = req.body;
 
-    bookingModel.datecheack(checkin, checkout, (error, result1) => {
+    bookingModel.datecheck(checkin, checkout, (error, result1) => {
         if (error) {
             console.error("Error retrieving data:", error);
             res.json({ status: 'Error retrieving data' });
