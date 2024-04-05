@@ -31,9 +31,15 @@ const packageModel={
     viewPackage: (callback) => {
         const query = 'SELECT * FROM package';
         pool.query(query, callback);
-    }
-
+    },
+    viewavailablePackage: (packageIds, callback) => {
+        // Dynamically generate placeholders for the package IDs
+        const placeholders = packageIds.map(() => '?').join(',');
+        const query = `SELECT * FROM package WHERE packageid NOT IN (${placeholders})`;
+        pool.query(query, packageIds, callback);
+        }
 }
+
 
 
 module.exports=packageModel
