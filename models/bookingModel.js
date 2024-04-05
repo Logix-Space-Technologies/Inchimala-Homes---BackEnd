@@ -6,7 +6,8 @@ const pool = mysql.createPool({
     host:process.env.DB_HOST,
     user:process.env.DB_USER,
     password:'',
-    database:process.env.DB_NAME
+    database:process.env.DB_NAME,
+    port:process.env.DB_PORT
 })
 
 
@@ -24,7 +25,7 @@ const bookingModel={
         const query = 'SELECT * FROM booking';
         pool.query(query, callback);
     },
-    viewAcceptedRoomBooking: (callback) => {
+    viewAcceptedBooking: (callback) => {
         const query = 'SELECT * FROM booking WHERE status="1" ';
         pool.query(query, callback);
     }
