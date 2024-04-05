@@ -23,6 +23,10 @@ const bookingModel={
     viewRoomBooking: (callback) => {
         const query = 'SELECT * FROM booking';
         pool.query(query, callback);
+    },
+    viewRejectedBooking: (callback) => {
+        const query = 'SELECT * FROM booking WHERE status="2"'; // Filter by rejected bookings
+        pool.query(query, callback);
     }
 
 }
