@@ -60,9 +60,9 @@ router.post('/rejectBooking', (req, res) => {
 router.get('/viewAcceptedBooking', (req, res) => {
     bookingModel.viewAcceptedBooking((error, results) => {
          res.status(404).send('No accepted bookings found');
-        }
+        })
     });
-});
+
 
   
   
@@ -103,8 +103,8 @@ router.post('/datecheack', (req, res) => {
                     }
                 });
             }
-        }
-    });
+    }
+});
 });
 router.post('/roombooking',(req,res)=>{
     bookingModel.RoomBooking(req.body,(error,results)=>{
