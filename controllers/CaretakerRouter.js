@@ -2,6 +2,8 @@ const express=require("express")
 const caretakerModel=require("../models/caretakerModel")
 const jwt = require("jsonwebtoken")
 const router=express.Router()
+const multer = require('multer');
+const upload = multer();
 
 //route to member register
 router.post('/signup',(req,res)=>{
