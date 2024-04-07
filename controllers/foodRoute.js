@@ -105,6 +105,7 @@ router.post('/bookfood', async (req, res) => {
                 status: 0 //order placed:0,order accepted:0,..
             };
 
+            
             // Insert booking record
             userModel.bookFood(bookingData, (error) => {
                 if (error) {
