@@ -2,6 +2,7 @@ const express = require("express")
 const foodModel = require("../models/foodModel")
 const userModel=require("../models/user")
 const router = express.Router()
+const jwt = require("jsonwebtoken")
 
 
 //route to food add
@@ -67,67 +68,84 @@ router.post('/updatefood', (req, res) => {
 //BOOKING FOOD BY USER
 
 router.post('/bookfood', async (req, res) => {
-    try {
-        const { userid, foodid, quantity } = req.body;
 
-        if (!userid || !foodid || !quantity) {
-            return res.status(400).json({ error: 'Please provide user ID, food ID, and quantity' });
-        }
+    const token = req.headers["token"]
+    jwt.verify(token,"inchimalaUserLogin",async(error,decoded)=>{
 
-        //retrive user details
-        userModel.getUserDetails(userid, (error, user) => {
-            if (error) {
-                return res.status(500).json({ error: 'Error booking food: ' + error.message });
-            }
-            if (!user) {
-                return res.status(404).json({ error: 'No such user exists with ID: ' + userid });
-            }
-        })
+        if (decoded && decoded.email) {
 
-        // Retrieve food details
-        foodModel.getFoodDetails(foodid, (error, foodDetails) => {
-            if (error) {
-                return res.status(500).json({ error: 'Error retrieving food details: ' + error });
-            }
-
-            if (!foodDetails) {
-                return res.status(404).json({ error: 'Food not found' });
-            }
-
-            const totalPrice = quantity * foodDetails.price; // Calculate total price
-
-            // Prepare booking data
-            const bookingData = {
-                userid,
-                foodid,
-                quantity,
-                totalprice: totalPrice,
-                status: 0 //order placed:0,order accepted:0,..
-            };
-
-            
-            // Insert booking record
-            userModel.bookFood(bookingData, (error) => {
-                if (error) {
-                    return res.status(500).json({ error: 'Error booking food: ' + error });
+            try {
+                const { userid, foodid, quantity } = req.body;
+        
+                if (!userid || !foodid || !quantity) {
+                    return res.status(400).json({ error: 'Please provide user ID, food ID, and quantity' });
                 }
+        
+                //retrive user details
+                userModel.getUserDetails(userid, (error, user) => {
+                    if (error) {
+                        return res.status(500).json({ error: 'Error booking food: ' + error.message });
+                    }
+                    if (!user) {
+                        return res.status(404).json({ error: 'No such user exists with ID: ' + userid });
+                    }
+                })
+        
+                // Retrieve food details
+                foodModel.getFoodDetails(foodid, (error, foodDetails) => {
+                    if (error) {
+                        return res.status(500).json({ error: 'Error retrieving food details: ' + error });
+                    }
+        
+                    if (!foodDetails) {
+                        return res.status(404).json({ error: 'Food not found' });
+                    }
+        
+                    const totalPrice = quantity * foodDetails.price; // Calculate total price
+        
+                    // Prepare booking data
+                    const bookingData = {
+                        userid,
+                        foodid,
+                        quantity,
+                        totalprice: totalPrice,
+                        status: 0 //order placed:0,order accepted:0,..
+                    };
+        
+                    
+                    // Insert booking record
+                    userModel.bookFood(bookingData, (error) => {
+                        if (error) {
+                            return res.status(500).json({ error: 'Error booking food: ' + error });
+                        }
+        
+                        // Prepare response data
+                        const responseData = {
+                            userid,
+                            foodid,
+                            foodname: foodDetails.name,
+                            quantity,
+                            totalprice: totalPrice,
+                            status: 0
+                        };
+        
+                        res.status(201).json({ status: 'success', bookingDetails: responseData });
+                    });
+                });
+            } catch (err) {
+                res.status(500).json({ error: err.message });
+            }
 
-                // Prepare response data
-                const responseData = {
-                    userid,
-                    foodid,
-                    foodname: foodDetails.name,
-                    quantity,
-                    totalprice: totalPrice,
-                    status: 0
-                };
+        }
+        else{
 
-                res.status(201).json({ status: 'success', bookingDetails: responseData });
-            });
-        });
-    } catch (err) {
-        res.status(500).json({ error: err.message });
-    }
+            res.json(
+                {status : "unauthorized user"}
+            )
+
+        }
+    })
+    
 });
 
 
