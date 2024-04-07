@@ -2,7 +2,7 @@ const express=require("express")
 const bookingModel=require("../models/bookingModel")
 const packageModel=require("../models/packageModel")
 const router=express.Router()
-
+const jwt = require("jsonwebtoken")
 
 
 //Accept Booking
@@ -115,14 +115,32 @@ router.post('/datecheck', (req, res) => {
     }
 });
 });
+
 router.post('/roombooking',(req,res)=>{
-    bookingModel.RoomBooking(req.body,(error,results)=>{
-        if (error) {
-            res.status(500).send('Booking unsuccessfull'+error)
-            return
+
+    const token = req.headers["token"]
+    jwt.verify(token,"inchimalaUserLogin",async(error,decoded)=>{
+
+        if (decoded && decoded.email) {
+            
+            bookingModel.RoomBooking(req.body,(error,results)=>{
+                if (error) {
+                    res.status(500).send('Booking unsuccessfull'+error)
+                    return
+                }
+                res.status(200).send(`Booking successfull : ${results.insertId}`)
+            })
+
+        } else {
+            
+            res.json(
+                {status : "unauthorized user"}
+            )
+
         }
-        res.status(200).send(`Booking successfull : ${results.insertId}`)
     })
+
+   
 
 });
 
