@@ -1,20 +1,11 @@
 const express = require("express")
 const foodModel = require("../models/foodModel")
 const userModel=require("../models/user")
+const multer =require("multer")
+
 const router = express.Router()
 
 
-//route to food add
-router.post('/addfood', (req, res) => {
-    foodModel.insertfood(req.body, (error, results) => {
-        if (error) {
-            res.status(500).send('Error inserting new food items' + error)
-            return
-        }
-        res.status(201).send(`food added with ID : ${results.insertId}`)
-    })
-
-});
 
 
 //router to search food
@@ -214,6 +205,59 @@ router.post('/updateFoodBookingStatus', (req, res) => {
 
 
 
+////////////////////////////////////////////////
+
+
+
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+      cb(null, 'images/');
+    },
+    filename: function (req, file, cb) {
+      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+      const fileName = uniqueSuffix + '-' + file.originalname;
+      cb(null, fileName);
+    },
+});
+
+const upload = multer({ 
+    storage: storage,
+    fileFilter: function (req, file, cb) {
+        if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
+            return cb(new Error('Only image files (jpg, jpeg, png, gif) are allowed'));
+        }
+        cb(null, true);
+    }
+});
+
+
+//route to food add
+
+router.post('/addfood', upload.single('file'), (req, res, next) => {
+    // Check if file was uploaded
+    if (!req.file) {
+        return res.status(400).json({ error: 'No file uploaded' });
+    }
+
+    // Destructure properties from req.file
+    const { filename: imagePath } = req.file;
+
+    // Insert the image path into foodModel
+    const foodData = { photo: imagePath };
+   
+    
+    foodModel.insertfood(req.body.name,req.body.type,req.body.description,req.body.price,req.body.addedBy,foodData,(error, result) => {
+      
+   
+        if (error) {
+            console.error('Error inserting image path into foodModel:', error);
+            res.status(500).json({ error: 'Error inserting image path into foodModel' });
+        } else {
+            console.log('Image path inserted into foodModel successfully:', result);
+            res.status(200).json({ success: 'data inserted' });
+        }
+    });
+});
 
 module.exports=router
 
