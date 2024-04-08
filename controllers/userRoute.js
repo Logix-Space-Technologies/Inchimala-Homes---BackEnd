@@ -88,7 +88,25 @@ router.post('/userlogin', (req, res) => {
     });
 });
 
+//router for search user
 
+router.post('/searchuser', (req, res) => {
+    const { name } = req.body; 
+    if (!name) {
+        return res.status(400).json({ error: 'Please enter the user name' });
+    }
+
+    userModel.searchUser(name, (error, results) => {
+        if (error) {
+            return res.status(500).send('Error searching user: ' + error);
+        }
+
+        if (results.length === 0) {
+            return res.status(404).json({ status:  'No such user' });
+            }
+        res.status(200).send(results); 
+    });
+});
 
 module.exports=router
 

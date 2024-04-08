@@ -53,7 +53,12 @@ const userModel = {
         }
         return callback(null, results[0]); // Return the first user found
     });
-}
+},
+
+searchUser: (name, callback) => {
+  const query = 'SELECT * FROM user WHERE name = ?';
+  pool.query(query, [name], callback);
+},
 
 
 }
