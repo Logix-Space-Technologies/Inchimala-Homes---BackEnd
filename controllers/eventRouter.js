@@ -1,5 +1,6 @@
 const express = require("express");
 const eventModel = require("../models/eventModel");
+const jwt = require("jsonwebtoken");
 const router = express.Router();
 
 router.post('/addevent', async (req, res) => {
@@ -26,9 +27,9 @@ router.post('/searchactivity', (req, res) => {
         }
 
         if (results.length === 0) {
-            return res.status(404).json({ status:  'No such ativity' });
-            }
-        res.status(200).send(results); 
+            return res.status(404).json({ status: 'No such ativity' });
+        }
+        res.status(200).send(results);
     });
 });
 
@@ -42,7 +43,7 @@ router.post('/updateevent', async (req, res) => {
             res.status(500).send('Error updating event data: ' + error);
             return;
         }
-        
+
         res.status(200).send(`Event with ID ${activityId} updated successfully`);
     });
 });
@@ -53,7 +54,7 @@ router.post('/updateevent', async (req, res) => {
 
 router.post('/deleteEvent', (req, res) => {
     const { activityid } = req.body; // Extract activityid from the request body
-   
+
     eventModel.deleteEvent(activityid, (error, results) => {
         if (!activityid) {
             return res.status(400).send('Activity ID is required');
@@ -79,41 +80,63 @@ router.get('/viewEvent', (req, res) => {
 
 //Reject Activity Booking
 router.post('/rejectActivityBooking', (req, res) => {
-    var id =req.body.id
-
-    eventModel.rejectActivityBooking(id,(error,results)=>{
-        if(error){
-            res.status(500).send('Error retrieving  data');
-            return;
+    var id = req.body.id;
+    const token = req.headers["token"];
+    jwt.verify(token, "inchimalaCaretakerLogin", async (error, decoded) => {
+        if (decoded && decoded.email) {
+            eventModel.rejectActivityBooking(id, (error, results) => {
+                if (error) {
+                    res.status(500).send('Error retrieving data');
+                    return;
+                }
+                if (results.length > 0) {
+                    res.status(200).json(results[0]);
+                } else {
+                    res.status(404).send(`Activity Booking rejected with ID : ${id}`);
+                }
+            });
+        } else {
+            res.json({
+                status: "unauthorized user"
+            });
         }
-        if(results.length > 0){
-            res.status(200).json(results[0]);
-        }
-        else{
-            res.status(404).send(`Activity Booking rejected with ID : ${id}`);
-        }
-       
     });
 });
+
 
 //Accept Activity Booking
 router.post('/acceptActivityBooking', (req, res) => {
-    var id =req.body.id
+    var id = req.body.id
+    const token = req.headers["token"]
+    jwt.verify(token, "inchimalaCaretakerLogin", async (error, decoded) => {
+        if (decoded && decoded.email) {
+            eventModel.acceptActivityBooking(id, (error, results) => {
+                if (error) {
+                    res.status(500).send('Error retrieving  data');
+                    return;
+                }
+                if (results.length > 0) {
+                    res.status(200).json(results[0]);
+                }
+                else {
+                    res.status(404).send(`Activity Booking accepted with ID : ${id}`);
+                }
 
-    eventModel.acceptActivityBooking(id,(error,results)=>{
-        if(error){
-            res.status(500).send('Error retrieving  data');
-            return;
+            });
+
+        } else {
+            res.json({
+                status: "unauthorized user"
+            });
+
         }
-        if(results.length > 0){
-            res.status(200).json(results[0]);
-        }
-        else{
-            res.status(404).send(`Activity Booking accepted with ID : ${id}`);
-        }
-       
+
     });
 });
+
+
+   
+
 
 
 router.post('/updateActivityBookingStatus', (req, res) => {
@@ -126,15 +149,15 @@ router.post('/updateActivityBookingStatus', (req, res) => {
         return;
     }
 
-        // Update the activity booking status to the new status
-        eventModel.updateActivityBookingStatus(id, newStatus, (error, results) => {
-            if (error) {
-                res.status(500).send('Error updating activity booking status');
-                return;
-            }
-            res.status(200).send(`Activity booking status updated to ${newStatus} for ID: ${id}`);
-        });
+    // Update the activity booking status to the new status
+    eventModel.updateActivityBookingStatus(id, newStatus, (error, results) => {
+        if (error) {
+            res.status(500).send('Error updating activity booking status');
+            return;
+        }
+        res.status(200).send(`Activity booking status updated to ${newStatus} for ID: ${id}`);
     });
+});
 
 
 
