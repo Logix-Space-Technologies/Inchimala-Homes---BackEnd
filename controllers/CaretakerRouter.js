@@ -28,7 +28,7 @@ router.post("/login",(req,res)=>{
         {
             return res.json({status:"Invalid Email ID"});
         }
-        if(contactno !== caretaker.contactno)
+        if(contactno != caretaker.contactno)
         {
             return res.json({status:"Invalid password"});
         }
