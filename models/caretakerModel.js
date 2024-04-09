@@ -28,13 +28,14 @@ const caretakerModel={
         });
     },
     deletecaretaker:(caretakerid,callback)=>{
-        const query='DELETE FROM caretaker WHERE caretakerid = ?';
+        const query = 'UPDATE caretaker SET delete_flag = 1 WHERE caretakerid = ?';
         pool.query(query,caretakerid,callback)
     },
     updateCaretaker: (caretakerId, updatedData, callback) => {
     const query = 'UPDATE caretaker SET ? WHERE caretakerid = ?';
     pool.query(query, [updatedData, caretakerId], callback);
     }
+    
 }
 
 module.exports=caretakerModel

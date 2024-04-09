@@ -18,7 +18,8 @@ const eventModel = {
 
 
     deleteEvent: (activityid, callback) => {
-        const query = 'DELETE FROM activity WHERE activityid = ?';
+        
+        const query = 'UPDATE activity SET delete_flag = 1 WHERE activityid = ?';
         pool.query(query, [activityid], callback);
     },
 
