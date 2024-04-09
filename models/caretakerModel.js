@@ -28,7 +28,7 @@ const caretakerModel={
         });
     },
     deletecaretaker:(caretakerid,callback)=>{
-        const query = 'UPDATE caretaker SET delete_flag = 1 WHERE caretakerid = ?';
+        const query = 'UPDATE caretaker SET deleteFlag = 1 WHERE caretakerid = ?';
         pool.query(query,caretakerid,callback)
     },
     updateCaretaker: (caretakerId, updatedData, callback) => {

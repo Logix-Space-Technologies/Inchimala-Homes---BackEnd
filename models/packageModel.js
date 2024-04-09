@@ -18,7 +18,7 @@ const packageModel={
     },
     deletePackage:(packageid,callback)=>{
         
-        const query = 'UPDATE package SET delete_flag = 1 WHERE packageid = ?';
+        const query = 'UPDATE package SET deleteFlag = 1 WHERE packageid = ?';
         pool.query(query,[packageid],callback)
     },
 
