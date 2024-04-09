@@ -6,6 +6,7 @@ require("dotenv").config()
 const pool = mysql.createPool({
     host:process.env.DB_HOST,
     user:process.env.DB_USER,
+    password:'',
     database:process.env.DB_NAME,
     port:process.env.DB_PORT
 })
@@ -33,7 +34,8 @@ const foodModel={
     
 
     deletefood:(foodid,callback)=>{
-        const query='DELETE FROM food WHERE foodid = ?';
+        
+        const query = 'UPDATE food SET deleteFlag = 1 WHERE foodid = ?';
         pool.query(query,foodid,callback)
     },
     updateFood: (foodId, updatedFoodData, callback) => {

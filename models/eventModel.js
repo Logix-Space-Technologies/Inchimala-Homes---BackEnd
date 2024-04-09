@@ -4,6 +4,7 @@ require("dotenv").config()
 const pool = mysql.createPool({
     host:process.env.DB_HOST,
     user:process.env.DB_USER,
+    password:'',
     database:process.env.DB_NAME,
     port:process.env.DB_PORT
 })
@@ -17,7 +18,8 @@ const eventModel = {
 
 
     deleteEvent: (activityid, callback) => {
-        const query = 'DELETE FROM activity WHERE activityid = ?';
+        
+        const query = 'UPDATE activity SET deleteFlag = 1 WHERE activityid = ?';
         pool.query(query, [activityid], callback);
     },
 

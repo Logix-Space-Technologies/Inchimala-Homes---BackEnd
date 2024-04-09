@@ -6,7 +6,8 @@ const pool = mysql.createPool({
     host:process.env.DB_HOST,
     user:process.env.DB_USER,
     password:'',
-    database:process.env.DB_NAME
+    database:process.env.DB_NAME,
+    port:process.env.DB_PORT
 })
 
 
@@ -16,7 +17,8 @@ const packageModel={
         pool.query(query,packageData,callback)
     },
     deletePackage:(packageid,callback)=>{
-        const query='DELETE FROM package WHERE packageid=?';
+        
+        const query = 'UPDATE package SET deleteFlag = 1 WHERE packageid = ?';
         pool.query(query,[packageid],callback)
     },
 
