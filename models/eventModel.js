@@ -50,7 +50,12 @@ const eventModel = {
     updateActivityBookingStatus: (id, newStatus, callback) => {
         const query = 'UPDATE activitybooking SET status=? WHERE id=?';//ongoing-status(3),completed-status(4)
         pool.query(query, [newStatus, id], callback);
+    },
+    viewCurrentActivities: (callback) => {
+        const query = 'SELECT * FROM activitybooking WHERE status IN (?, ?)';
+        pool.query(query, [1, 3], callback); // 1 for accepted, 3 for ongoing
     }
+    
     
     
 

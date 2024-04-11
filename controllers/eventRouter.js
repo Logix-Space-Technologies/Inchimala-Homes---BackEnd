@@ -160,6 +160,19 @@ router.post('/updateActivityBookingStatus', (req, res) => {
 });
 
 
+// View Accepted and Ongoing Activities
+
+router.get('/viewCurrentEvents', (req, res) => {
+    eventModel.viewCurrentActivities((error, results) => {
+        if (error) {
+            res.status(500).send('Error retrieving accepted and ongoing activities');
+            return;
+        }
+        res.status(200).json(results);
+    });
+});
+
+
 
 
 module.exports = router;
