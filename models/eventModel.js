@@ -39,7 +39,7 @@ const eventModel = {
     },
 
     rejectActivityBooking:(id,callback)=>{
-        const query='UPDATE activitybooking set status="2" WHERE id=?';  //pending-status(0) , accepted-status(1) , rejected-status(2)
+        const query='UPDATE activitybooking set deleteFlag="1" WHERE id=?';  //pending-status(0) , accepted-status(1) , rejected-status(1)
         pool.query(query,[id],callback)
     },
 
