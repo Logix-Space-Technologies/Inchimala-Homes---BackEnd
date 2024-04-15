@@ -54,6 +54,10 @@ const eventModel = {
     viewCurrentActivities: (callback) => {
         const query = 'SELECT * FROM activitybooking WHERE status IN (?, ?)';
         pool.query(query, [1, 3], callback); // 1 for accepted, 3 for ongoing
+    },
+    viewuserActivities: (userid,callback) => {
+        const query = 'SELECT activitybooking.*,activity.* FROM activitybooking INNER JOIN activity ON activitybooking.activityid=activity.activityid WHERE activitybooking.userid= ? AND activitybooking.status IN (?, ?)';
+        pool.query(query, [userid,1, 3], callback); // 1 for accepted, 3 for ongoing
     }
     
     

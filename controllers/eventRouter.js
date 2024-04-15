@@ -172,6 +172,16 @@ router.get('/viewCurrentEvents', (req, res) => {
     });
 });
 
+router.post('/viewuseractivity', (req, res) => {
+    eventModel.viewuserActivities(req.body.userid,(error, results) => {
+        if (error) {
+            res.json({status:'Error retrieving accepted and ongoing activities'});
+            return;
+        }
+        res.status(200).json(results);
+    });
+});
+
 
 
 
