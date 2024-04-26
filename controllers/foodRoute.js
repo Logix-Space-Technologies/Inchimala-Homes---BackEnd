@@ -299,6 +299,17 @@ router.post('/rejectFoodBooking', (req, res) => {
             }
         });
     });
+    // View Current food orders
+
+router.get('/viewCurrentFoodOrders', (req, res) => {
+    foodModel.viewCurrentFoodOrders((error, results) => {
+        if (error) {
+            res.status(500).send('Error retrieving current food orders');
+            return;
+        }
+        res.status(200).json(results);
+    });
+});
 
     module.exports = router
 

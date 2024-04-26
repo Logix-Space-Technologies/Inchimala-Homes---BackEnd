@@ -103,6 +103,11 @@ const foodModel={
     updateFoodBookingStatus: (id, newStatus, callback) => {
         const query = 'UPDATE foodbooking SET status = ? WHERE id = ?'; // food preperation ongoing(3), food preperation completed(4), food delivered(5)
         pool.query(query, [newStatus,id], callback);
+    },
+
+    viewCurrentFoodOrders: (callback) => {
+        const query = 'SELECT * FROM foodbooking WHERE status IN (?, ?)';
+        pool.query(query, [1, 3], callback); // 1 for accepted, 3 for ongoing
     }
 
 
