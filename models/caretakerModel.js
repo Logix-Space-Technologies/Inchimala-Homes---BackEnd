@@ -1,8 +1,6 @@
 const mysql = require("mysql")
 require("dotenv").config()
-
 //MySQL connection
-
 const pool = mysql.createPool({
     host:process.env.DB_HOST,
     user:process.env.DB_USER,
@@ -27,6 +25,14 @@ const caretakerModel={
               }
               return callback(null, results[0]);
         });
+    },
+    deletecaretaker:(caretakerid,callback)=>{
+        const query='DELETE FROM caretaker WHERE caretakerid = ?';
+        pool.query(query,caretakerid,callback)
+    },
+    updateCaretaker: (caretakerId, updatedData, callback) => {
+    const query = 'UPDATE caretaker SET ? WHERE caretakerid = ?';
+    pool.query(query, [updatedData, caretakerId], callback);
     }
 }
 

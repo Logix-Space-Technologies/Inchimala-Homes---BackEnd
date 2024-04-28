@@ -33,6 +33,29 @@ const userModel = {
           return callback(null, results[0]);
         });
     },
+
+
+
+//BOOKING FOOD
+    bookFood: (bookingData, callback) => {
+      const query = 'INSERT INTO foodbooking SET ?';
+      pool.query(query, bookingData, callback);
+  },
+
+  getUserDetails: (userid, callback) => {
+    const query = 'SELECT * FROM user WHERE userid = ?';
+    pool.query(query, [userid], (error, results) => {
+        if (error) {
+            return callback(error, null);
+        }
+        if (results.length === 0) {
+            return callback(null, null); // No user found with the given ID
+        }
+        return callback(null, results[0]); // Return the first user found
+    });
+}
+
+
 }
 
 

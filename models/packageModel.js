@@ -18,7 +18,22 @@ const packageModel={
     deletePackage:(packageid,callback)=>{
         const query='DELETE FROM package WHERE packageid=?';
         pool.query(query,[packageid],callback)
+    },
+
+    updatePackage: (packageid, newData, callback) => {
+        const query = 'UPDATE package SET ? WHERE packageid = ?';
+        pool.query(query, [newData, packageid],callback) 
+    },
+    searchPackage: (name, callback) => {
+        const query = 'SELECT * FROM package WHERE name = ?';
+        pool.query(query, [name], callback);
+    },
+    viewPackage: (callback) => {
+        const query = 'SELECT * FROM package';
+        pool.query(query, callback);
     }
+
 }
+
 
 module.exports=packageModel

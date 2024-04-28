@@ -1,5 +1,6 @@
 const express = require("express")
 const userModel = require("../models/user")
+const foodModel=require("../models/foodModel")
 const router = express.Router()
 const bcrypt = require("bcryptjs")
 
@@ -43,7 +44,7 @@ router.get('/view', (req, res) => {
 });
 
 
-module.exports = router
+
 
 router.post('/userlogin', (req, res) => {
     const { emailid,password } = req.body;
@@ -71,6 +72,13 @@ router.post('/userlogin', (req, res) => {
         });
     });
 });
+
+
+
+
+
+
+
 
 module.exports=router
 

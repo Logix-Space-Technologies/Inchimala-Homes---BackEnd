@@ -16,7 +16,6 @@ router.post('/addpackage',(req,res)=>{
 });
 
 
-
 //delete package
 router.post('/deletePackage', (req, res) => {
     var packageId =req.body.packageid
@@ -35,5 +34,47 @@ router.post('/deletePackage', (req, res) => {
        
     });
 });
+
+router.post("/updatepackage", async (req, res) => {
+    let { packageid, ...rest } = req.body; 
+    packageModel.updatePackage(packageid, rest, (error, results) => { 
+        if (error) {
+            res.status(500).send('Error updating package: ' + error); 
+            return;
+        }
+        res.status(200).send('Package updated successfully');
+    });
+});
+
+//router for search package
+
+router.post('/searchpackage', (req, res) => {
+    const { name } = req.body; 
+    if (!name) {
+        return res.status(400).json({ error: 'Please enter the package name' });
+    }
+
+    packageModel.searchPackage(name, (error, results) => {
+        if (error) {
+            return res.status(500).send('Error searching package: ' + error);
+        }
+
+        if (results.length === 0) {
+            return res.status(404).json({ status:  'No such package' });
+            }
+        res.status(200).send(results); 
+    });
+});
+
+//to view packages
+
+router.get('/viewpackage', (req, res) => {
+    packageModel.viewPackage((error, results) => {
+        res.json(results)
+        console.log(results)
+    })
+});
+
+
 
 module.exports=router
