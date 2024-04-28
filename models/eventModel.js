@@ -48,10 +48,45 @@ const eventModel = {
     updateActivityBookingStatus: (id, newStatus, callback) => {
         const query = 'UPDATE activitybooking SET status=? WHERE id=?';//ongoing-status(3),completed-status(4)
         pool.query(query, [newStatus, id], callback);
-    }
-    
+    },
     
 
+
+    //getActivityDetails
+
+    
+    getActivityDetails: (activityid, callback) => {
+    const query = 'SELECT * FROM activity WHERE activityid = ?';
+    pool.query(query, [activityid], (error, results) => {
+        if (error) {
+            return callback('Error retrieving activity details from the database: ' + error.message, null);
+        }
+        if (results.length === 0) {
+            return callback('No activity found with the given ID', null);
+        }
+        // Return the first activity found
+        return callback(null, results[0]);
+    });
+},
+
+    
+    bookactivity: (activitybookingData, callback) => {
+        const query = 'INSERT INTO activitybooking SET ?';
+        pool.query(query, activitybookingData, callback);
+    },
+  
+    getUserDetails: (userid, callback) => {
+      const query = 'SELECT * FROM user WHERE userid = ?';
+      pool.query(query, [userid], (error, results) => {
+          if (error) {
+              return callback(error, null);
+          }
+          if (results.length === 0) {
+              return callback(null, null); // No user found with the given ID
+          }
+          return callback(null, results[0]); // Return the first user found
+      });
+    },
 
 
 }
