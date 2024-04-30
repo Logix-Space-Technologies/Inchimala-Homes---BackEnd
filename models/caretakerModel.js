@@ -34,6 +34,18 @@
         updateCaretaker: (caretakerId, updatedData, callback) => {
         const query = 'UPDATE caretaker SET ? WHERE caretakerid = ?';
         pool.query(query, [updatedData, caretakerId], callback);
+        },
+        getCaretakerById: (caretakerId, callback) => {
+            const query = 'SELECT * FROM caretaker WHERE caretakerid = ? LIMIT 1';
+            pool.query(query, [caretakerId], (error, results) => {
+                if (error) {
+                    return callback(error, null);
+                }
+                if (results.length === 0) {
+                    return callback(null, null); 
+                }
+                return callback(null, results[0]); 
+            });
         }
         
     }
