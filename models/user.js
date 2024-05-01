@@ -10,11 +10,15 @@ const pool = mysql.createPool({
 })
 
 
+
 const userModel = {
-    insertuser: (userData, callback) => {
-        const query = 'INSERT INTO user SET ?';
-        pool.query(query, userData, callback)
-    },
+
+    insertuser: (name,emailid,contactno,password,aadharNo,address,pincode,bookingtype,photo, callback) => {
+      const query = 'INSERT INTO user (name,emailid,contactno,password,aadharNo,address,pincode,bookingtype,photo) VALUES(?,?,?,?,?,?,?,?,?)';
+      pool.query(query, [name,emailid,contactno,password,aadharNo,address,pincode,bookingtype,photo], callback)
+  },
+    
+
     viewusers: (callback) => {
         const query = 'SELECT * FROM user';
         pool.query(query, callback);
