@@ -12,7 +12,6 @@ const pool = mysql.createPool({
 })
 
 const foodModel={
-    
 
     insertfood: (name,type,description,price,addedBy,foodData, callback) => {
         const query = 'INSERT INTO food (name, type, description, price, addedBy, photo) VALUES (?,?,?,?,?,?)'; 

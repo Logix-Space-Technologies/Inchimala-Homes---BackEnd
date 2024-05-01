@@ -2,7 +2,6 @@ const express = require("express")
 const foodModel = require("../models/foodModel")
 const userModel = require("../models/user")
 const multer = require("multer")
-
 const router = express.Router()
 const jwt = require("jsonwebtoken")
 
@@ -187,7 +186,6 @@ router.post('/rejectFoodBooking', (req, res) => {
 
     router.get('/viewfood', (req, res) => {
         foodModel.viewFood((error, results) => {
-
             res.json(results)
             console.log(results)
         })
