@@ -10,11 +10,12 @@
     })
 
     const caretakerModel={
-        insertCaretaker:(caretakerData,callback)=>{
-            const query='INSERT INTO caretaker SET ?';
-            pool.query(query,caretakerData,callback)
-        },
-    
+
+        insertCaretaker:(name,address,contactno,emailid,experience,photo,callback)=>{
+                 const query='INSERT INTO caretaker (name,address,contactno,emailid,experience,photo) VALUES(?,?,?,?,?,?)';
+                 pool.query(query,[name,address,contactno,emailid,experience,photo],callback)
+             },
+
         loginCaretaker:(emailid, callback) => {
             const query = 'SELECT * FROM caretaker WHERE emailid = ? LIMIT 1';
             pool.query(query,[emailid],(error,results) => {

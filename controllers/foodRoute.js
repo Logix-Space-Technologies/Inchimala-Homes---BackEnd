@@ -280,15 +280,9 @@ router.post('/rejectFoodBooking', (req, res) => {
             return res.status(400).json({ error: 'No file uploaded' });
         }
 
-        // Destructure properties from req.file
         const { filename: imagePath } = req.file;
 
-        // Insert the image path into foodModel
-        const foodData = { photo: imagePath };
-
-
-        foodModel.insertfood(req.body.name, req.body.type, req.body.description, req.body.price, req.body.addedBy, foodData, (error, result) => {
-
+        foodModel.insertfood(req.body.name, req.body.type, req.body.description, req.body.price, req.body.addedBy, imagePath, (error, result) => {
 
             if (error) {
                 console.error('Error inserting image path into foodModel:', error);
