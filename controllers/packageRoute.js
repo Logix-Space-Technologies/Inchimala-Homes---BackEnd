@@ -2,10 +2,40 @@ const express=require("express")
 const packageModel=require("../models/packageModel")
 
 const router=express.Router()
+const multer = require("multer")
+
+
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'images/');
+    },
+    filename: function (req, file, cb) {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        const fileName = uniqueSuffix + '-' + file.originalname;
+        cb(null, fileName);
+    },
+});
+
+const upload = multer({
+    storage: storage,
+    fileFilter: function (req, file, cb) {
+        if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
+            return cb(new Error('Only image files (jpg, jpeg, png, gif) are allowed'));
+        }
+        cb(null, true);
+    }
+});
+
+
 
 //route to add package
-router.post('/addpackage',(req,res)=>{
-    packageModel.insertPackage(req.body,(error,results)=>{
+router.post('/addpackage',upload.single('file'), (req, res, next) => {
+    if (!req.file) {
+        return res.status(400).json({ error: 'No file uploaded' });
+    }
+    const { filename: imagePath } = req.file;
+
+    packageModel.insertPackage(req.body.name,req.body.description,req.body.price,imagePath,(error,results)=>{
         if (error) {
             res.status(500).send('Error inserting package data'+error)
             return

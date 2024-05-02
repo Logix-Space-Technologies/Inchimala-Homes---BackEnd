@@ -12,10 +12,12 @@ const pool = mysql.createPool({
 
 
 const packageModel={
-    insertPackage:(packageData,callback)=>{
-        const query='INSERT INTO package SET ?';
-        pool.query(query,packageData,callback)
-    },
+
+    insertPackage: (name,description,price,photo,callback) => {
+            const query = 'INSERT INTO package (name,description,price,photo) VALUES(?,?,?,?)';
+            pool.query(query, [name,description,price,photo], callback)
+        },
+
     deletePackage:(packageid,callback)=>{
         
         const query = 'UPDATE package SET deleteFlag = 1 WHERE packageid = ?';

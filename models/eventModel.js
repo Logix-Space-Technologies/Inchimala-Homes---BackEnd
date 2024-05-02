@@ -10,10 +10,9 @@ const pool = mysql.createPool({
 })
 const eventModel = {
 
-    insertEvent: (eventData, callback) => {
-        console.log(eventData)
-        const query = 'INSERT INTO activity SET ?';
-        pool.query(query, eventData, callback)
+    insertEvent: (name,description,price,photo,callback) => {
+        const query = 'INSERT INTO activity (name,description,price,photo) VALUES(?,?,?,?)';
+        pool.query(query, [name,description,price,photo], callback)
     },
 
 
