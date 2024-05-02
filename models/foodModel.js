@@ -12,14 +12,10 @@ const pool = mysql.createPool({
 })
 
 const foodModel={
-    // insertfood:(foodData,callback)=>{
-    //     const query='INSERT INTO food SET ?';
-    //     pool.query(query,foodData,callback)
-    // },
-
+    
 
     insertfood: (name,type,description,price,addedBy,foodData, callback) => {
-        const query = 'INSERT INTO food (name, type, description, price, addedBy, photo) VALUES (?,?,?,?,?,?)'; // Inserting into multiple columns
+        const query = 'INSERT INTO food (name, type, description, price, addedBy, photo) VALUES (?,?,?,?,?,?)'; 
       
         pool.query(query, [name,type,description,price,addedBy,foodData], callback);
     
