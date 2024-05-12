@@ -32,7 +32,7 @@ app.use("/api/booking",bookingrouter)
 
 
 app.use("/api/admin",adminrouter)
-
+app.use('/images', express.static('images'));
 
 
 app.listen(3002,()=>{
