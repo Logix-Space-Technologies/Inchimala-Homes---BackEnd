@@ -98,7 +98,7 @@ router.post('/deleteEvent', (req, res) => {
 
 //to view events
 
-router.get('/viewEvent', (req, res) => {
+router.post('/viewEvent', (req, res) => {
     eventModel.viewEvent((error, results) => {
         res.json(results)
         console.log(results)

@@ -68,7 +68,7 @@ router.post('/signup', upload.single('file'), async (req, res,next) => {
 
 
 
-router.get('/view', (req, res) => {
+router.post('/view', (req, res) => {
     userModel.viewusers((error, results) => {
         res.json(results)
         console.log(results)
