@@ -185,7 +185,7 @@ router.post('/rejectFoodBooking', (req, res) => {
 
     //to view food details
 
-    router.get('/viewfood', (req, res) => {
+    router.post('/viewfood', (req, res) => {
         foodModel.viewFood((error, results) => {
 
             res.json(results)
@@ -295,7 +295,7 @@ router.post('/rejectFoodBooking', (req, res) => {
     });
     // View Current food orders
 
-router.get('/viewCurrentFoodOrders', (req, res) => {
+router.post('/viewCurrentFoodOrders', (req, res) => {
     foodModel.viewCurrentFoodOrders((error, results) => {
         if (error) {
             res.status(500).send('Error retrieving current food orders');
