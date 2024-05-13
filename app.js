@@ -28,7 +28,7 @@ app.use("/api/event",eventrouter)
 
 app.use("/api/booking",bookingrouter)
 
-
+app.use('/images', express.static('images'));
 
 
 app.use("/api/admin",adminrouter)
