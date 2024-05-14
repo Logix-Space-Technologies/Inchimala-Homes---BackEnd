@@ -33,7 +33,7 @@ router.post('/addevent',  upload.single('file'), (req, res, next) => {
     }
     const { filename: imagePath } = req.file;
 
-    eventModel.insertEvent(req.body.name,req.body.description,req.body.price,imagePath, (error, results) => {
+    eventModel.insertEvent(req.body.name,req.body.description,req.body.price,req.body.addedBy,imagePath, (error, results) => {
         if (error) {
             res.status(500).send('Error inserting caretaker data' + error);
             return;
