@@ -26,7 +26,7 @@ router.post('/acceptBooking', (req, res) => {
 
 //to view Room Bookings
 
-router.get('/viewRoomBooking', (req, res) => {
+router.post('/viewRoomBooking', (req, res) => {
     bookingModel.viewRoomBooking((error, results) => {
         res.json(results)
         console.log(results)
