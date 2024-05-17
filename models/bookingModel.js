@@ -22,7 +22,7 @@ const bookingModel={
         pool.query(query,[bookingid],callback)
     },
     viewRoomBooking: (callback) => {
-        const query = 'SELECT * FROM booking';
+        const query = 'SELECT booking.bookingid, booking.userid, user.name AS username, booking.packageid, booking.checkin, booking.checkout, booking.rooms, booking.adult, booking.children, booking.status, booking.deleteFlag, booking.activeFlag, booking.addedDate, booking.updatedDate, booking.addedBy, booking.updatedBy FROM booking JOIN user ON booking.userid = user.userid';
         pool.query(query, callback);
     },
     viewAcceptedBooking: (callback) => {
