@@ -7,6 +7,10 @@ const foodrouter=require("./controllers/foodRoute")
 const userRoute=require("./controllers/userRoute")
 const packagerouter=require("./controllers/packageRoute")
 const adminrouter=require("./controllers/AdminRouter")
+const eventrouter=require("./controllers/eventRouter")
+
+const bookingrouter=require("./controllers/bookingRouter")
+
 
 
 const app = express()
@@ -20,11 +24,14 @@ app.use("/api/food",foodrouter)
 
 app.use("/api/user",userRoute)
 app.use("/api/package",packagerouter)
+app.use("/api/event",eventrouter)
+
+app.use("/api/booking",bookingrouter)
+
+app.use('/images', express.static('images'));
 
 
 app.use("/api/admin",adminrouter)
-
-
 
 
 

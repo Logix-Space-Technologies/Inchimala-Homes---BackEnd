@@ -1,19 +1,19 @@
-const mysql=require("mysql")
+const mysql = require("mysql")
+
 //MySQL connection
 
-
-
 const pool = mysql.createPool({
-    host:process.env.DB_HOST,
-    user:process.env.DB_USER,
-    database:process.env.DB_NAME,
+    host:'localhost',
+    user:'root',
+    password:'',
+    database:'inchimala_db',
     port:process.env.DB_PORT
 })
 
 const adminModel={
-    insertAdmin: (adminData, callback)=>{
+    insertadmin:(adminData,callback)=>{
         const query='INSERT INTO admin SET ?';
-        pool.query(query,adminData, callback);
+        pool.query(query,adminData,callback)
     },
     loginAdmin: (emailid, callback) => {
         const query = 'SELECT * FROM admin WHERE emailid = ? LIMIT 1'; 
@@ -27,6 +27,7 @@ const adminModel={
           return callback(null, results[0]);
         });
     },
+   
 }
 
 
