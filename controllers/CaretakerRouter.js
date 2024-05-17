@@ -100,18 +100,17 @@ caretakerModel.updateCaretaker(caretakerId, updatedData, (error, results) => {
     });
 });
 router.post('/viewcaretaker', (req, res) => {
-    const caretakerId = req.body.caretakerId;
-
-    caretakerModel.getCaretakerById(caretakerId, (error, caretaker) => {
+    caretakerModel.getAllCaretakers((error, caretakers) => {
         if (error) {
             res.status(500).send('Error retrieving caretaker data: ' + error);
             return;
         }
-        if (!caretaker) {
-            res.status(404).send('Caretaker not found');
+        if (!caretakers || caretakers.length === 0) {
+            res.status(404).send('No caretakers found');
             return;
         }
-        res.status(200).json(caretaker);
+        res.status(200).json(caretakers);
     });
 });
+
 module.exports=router
