@@ -34,10 +34,12 @@ const foodModel={
         const query = 'UPDATE food SET deleteFlag = 1 WHERE foodid = ?';
         pool.query(query,foodid,callback)
     },
-    updateFood: (foodId, updatedFoodData, callback) => {
+
+    updateFood: (foodid, newData, callback) => {
         const query = 'UPDATE food SET ? WHERE foodid = ?';
-        pool.query(query, [updatedFoodData, foodId], callback);
+        pool.query(query, [newData, foodid], callback);
     },
+    
 
     
     //food booking by user
