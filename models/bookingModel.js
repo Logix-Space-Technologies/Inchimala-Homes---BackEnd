@@ -18,7 +18,7 @@ const bookingModel={
         pool.query(query,[bookingid],callback)
     },
     rejectBooking:(bookingid,callback)=>{
-        const query='UPDATE booking set deleteFlag="1" WHERE bookingid=?';  //pending-status(0) , accepted-status() , rejected-status(1)
+        const query='UPDATE booking set deleteFlag ="1"  WHERE bookingid=?';  //pending-status(0) , accepted-status() , rejected-status(1)
         pool.query(query,[bookingid],callback)
     },
     viewRoomBooking: (callback) => {
