@@ -26,7 +26,7 @@ const bookingModel={
         pool.query(query, callback);
     },
     viewAcceptedBooking: (callback) => {
-        const query = 'SELECT * FROM booking WHERE status="1" ';
+        const query = 'SELECT booking.*,user.name AS username,user.photo,user.contactno,package.name FROM booking INNER JOIN user ON booking.userid=user.userid INNER JOIN package ON booking.packageid=package.packageid WHERE booking.status="1" ';
       pool.query(query, callback);
     },
 
@@ -40,7 +40,7 @@ const bookingModel={
 },
 
     viewRejectedBooking: (callback) => {
-        const query = 'SELECT * FROM booking WHERE status="2"'; // Filter by rejected bookings
+        const query = 'SELECT booking.*,user.name AS username,user.photo,user.contactno,package.name FROM booking INNER JOIN user ON booking.userid=user.userid INNER JOIN package ON booking.packageid=package.packageid WHERE booking.status="2"'; // Filter by rejected bookings
         pool.query(query, callback);
     }
 

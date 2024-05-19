@@ -154,7 +154,7 @@ router.post('/roombooking',(req,res)=>{
 
 // View Rejected Booking
 
-router.get('/viewRejectedBooking', (req, res) => {
+router.post('/viewRejectedBooking', (req, res) => {
     bookingModel.viewRejectedBooking((error, results) => {
         if (error) {
             res.status(500).send('Error retrieving data');
