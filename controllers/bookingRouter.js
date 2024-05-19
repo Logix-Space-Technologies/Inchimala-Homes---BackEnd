@@ -7,22 +7,27 @@ const jwt = require("jsonwebtoken")
 
 //Accept Booking
 router.post('/acceptBooking', (req, res) => {
-    var bookingid =req.body.bookingid
+    const { bookingid, adminid } = req.body;
+    
 
-    bookingModel.acceptBooking(bookingid,(error,results)=>{
-        if(error){
-            res.status(500).send('Error retrieving  data');
+    if (!bookingid || !adminid) {
+        res.status(400).send('Booking ID and Admin ID are required');
+        return;
+    }
+
+    bookingModel.acceptBooking(bookingid, adminid, (error, results) => {
+        if (error) {
+            res.status(500).send('Error updating booking data');
             return;
         }
-        if(results.length > 0){
-            res.status(200).json(results[0]);
+        if (results.affectedRows > 0) {
+            res.status(200).send(`Booking accepted with ID: ${bookingid}`);
+        } else {
+            res.status(404).send(`Booking not found with ID: ${bookingid}`);
         }
-        else{
-            res.status(404).send(`Booking accepted with ID : ${bookingid}`);
-        }
-       
     });
 });
+
 
 //to view Room Bookings
 
