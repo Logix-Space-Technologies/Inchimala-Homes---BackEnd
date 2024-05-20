@@ -1,14 +1,14 @@
-const express=require("express")
-const bookingModel=require("../models/bookingModel")
-const packageModel=require("../models/packageModel")
-const router=express.Router()
+const express = require("express")
+const bookingModel = require("../models/bookingModel")
+const packageModel = require("../models/packageModel")
+const router = express.Router()
 const jwt = require("jsonwebtoken")
 
 
 //Accept Booking
 router.post('/acceptBooking', (req, res) => {
     const { bookingid, adminid } = req.body;
-    
+
 
     if (!bookingid || !adminid) {
         res.status(400).send('Booking ID and Admin ID are required');
@@ -42,20 +42,20 @@ router.post('/viewRoomBooking', (req, res) => {
 
 //Reject Booking
 router.post('/rejectBooking', (req, res) => {
-    var bookingid =req.body.bookingid
+    var bookingid = req.body.bookingid
 
-    bookingModel.rejectBooking(bookingid,(error,results)=>{
-        if(error){
+    bookingModel.rejectBooking(bookingid, (error, results) => {
+        if (error) {
             res.status(500).send('Error retrieving  data');
             return;
         }
-        if(results.length > 0){
+        if (results.length > 0) {
             res.status(200).json(results[0]);
         }
-        else{
+        else {
             res.status(404).send(`Booking rejected with ID : ${bookingid}`);
         }
-       
+
     });
 });
 
@@ -63,23 +63,39 @@ router.post('/rejectBooking', (req, res) => {
 //To View Accepeted Room Bookings
 
 router.post('/viewAcceptedBooking', (req, res) => {
-    bookingModel.viewAcceptedBooking((error, results) => {
-        if (error) {
-            res.status(500).send('Error retrieving data');
-            return;
-        }
-        if (results.length > 0) {
-            res.status(200).json(results);
-        } else {
 
-            res.status(404).send('No accepted bookings found');
+    const token = req.headers["token"]
+    jwt.verify(token, "inchimalaAdminLogin", async (error, decoded) => {
+
+        if (decoded && decoded.email) {
+
+            bookingModel.viewAcceptedBooking((error, results) => {
+                if (error) {
+                    res.status(500).send('Error retrieving data');
+                    return;
+                }
+                if (results.length > 0) {
+                    res.status(200).json(results);
+                } else {
+
+                    res.status(404).send('No accepted bookings found');
+                }
+            });
         }
-    });
+        else {
+
+            res.json(
+                { status: "unauthorized user" }
+            )
+
+        }
+    })
 });
 
 
-  
-  
+
+
+
 router.post('/datecheck', (req, res) => {
     const { checkin, checkout } = req.body;
 
@@ -103,7 +119,7 @@ router.post('/datecheck', (req, res) => {
                         res.json({ status: 'Error retrieving data' });
                     } else {
                         res.status(200).json(result);
-                      
+
                     }
                 });
             } else {
@@ -117,35 +133,35 @@ router.post('/datecheck', (req, res) => {
                     }
                 });
             }
-    }
-});
+        }
+    });
 });
 
-router.post('/roombooking',(req,res)=>{
+router.post('/roombooking', (req, res) => {
 
     const token = req.headers["token"]
-    jwt.verify(token,"inchimalaUserLogin",async(error,decoded)=>{
+    jwt.verify(token, "inchimalaUserLogin", async (error, decoded) => {
 
         if (decoded && decoded.email) {
-            
-            bookingModel.RoomBooking(req.body,(error,results)=>{
+
+            bookingModel.RoomBooking(req.body, (error, results) => {
                 if (error) {
-                    res.status(500).send('Booking unsuccessfull'+error)
+                    res.status(500).send('Booking unsuccessfull' + error)
                     return
                 }
                 res.status(200).send(`Booking successfull : ${results.insertId}`)
             })
 
         } else {
-            
+
             res.json(
-                {status : "unauthorized user"}
+                { status: "unauthorized user" }
             )
 
         }
     })
 
-   
+
 
 });
 
@@ -175,4 +191,4 @@ router.post('/viewRejectedBooking', (req, res) => {
 
 
 
-module.exports=router
+module.exports = router
