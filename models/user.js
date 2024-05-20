@@ -65,6 +65,11 @@ searchUser: (name, callback) => {
   pool.query(query, [name], callback);
 },
 
+userprofile: (userid, callback) => {
+  console.log(userid)
+  const query = 'SELECT * FROM user WHERE userid = ?';
+  pool.query(query,[userid], callback);
+},
 
 }
 
