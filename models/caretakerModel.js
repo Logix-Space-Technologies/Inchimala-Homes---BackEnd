@@ -37,7 +37,7 @@
         pool.query(query, [updatedData, caretakerId], callback);
         },
         getAllCaretakers: (callback) => {
-            const query = 'SELECT * FROM caretaker deleteFlag != 1';
+            const query = 'SELECT * FROM caretaker WHERE deleteFlag != 1';
             pool.query(query, (error, results) => {
                 if (error) {
                     return callback(error, null);
