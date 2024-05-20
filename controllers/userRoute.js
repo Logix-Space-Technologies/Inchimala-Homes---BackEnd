@@ -140,5 +140,34 @@ router.post('/searchuser', (req, res) => {
     });
 });
 
+router.post('/userprofile',(req,res)=>{
+    jwt.verify(token, "inchimalaUserLogin", async (error, decoded) => {
+
+        if (decoded && decoded.email) {
+
+            try {
+    
+                userModel.userprofile(req.body.userid,(error,results)=>{
+                    if(error){
+                        return res.status(500).json({ error: 'Error viewing profile: ' + error.message})
+                    }
+                    if(results.length === 0 ){
+                        return res.status(404).json({status:  'No such user' })
+                    }
+                    res.status(200).send(results); 
+                });
+            }catch (err){
+                res.status(500).json({error:err.message})
+            }
+
+        }
+        else{
+            res.json(
+                { status: "unauthorized user" }
+            )
+        }
+    })    
+});
+
 module.exports=router
 
