@@ -78,7 +78,7 @@ const foodModel={
     
 
     viewFood: (callback) => {
-        const query = 'SELECT * FROM food';
+        const query = 'SELECT * FROM food WHERE deleteFlag != 1';
         pool.query(query, callback);
     },
 
