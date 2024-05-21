@@ -17,13 +17,13 @@ router.post('/acceptBooking', (req, res) => {
 
     bookingModel.acceptBooking(bookingid, adminid, (error, results) => {
         if (error) {
-            res.status(500).send('Error updating booking data');
+            res.json({status:'Error updating booking data'})
             return;
         }
         if (results.affectedRows > 0) {
-            res.status(200).send(`Booking accepted with ID: ${bookingid}`);
+            res.json({status :`Booking accepted with ID: ${bookingid}`})
         } else {
-            res.status(404).send(`Booking not found with ID: ${bookingid}`);
+            res.json({status:`Booking not found with ID: ${bookingid}`})
         }
     });
 });
