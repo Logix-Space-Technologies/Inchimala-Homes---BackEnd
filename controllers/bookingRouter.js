@@ -55,7 +55,7 @@ router.post('/rejectBooking', (req, res) => {
             return;
         }
         if (results.affectedRows > 0) {
-            res.json({status :`Booking Rejected with ID: ${bookingid}`})
+            res.status(200).json({status :`Booking Rejected with ID: ${bookingid}`})
         } else {
             res.json({status:`Booking not found with ID: ${bookingid}`})
         }
