@@ -14,9 +14,10 @@ const pool = mysql.createPool({
 const bookingModel = {
 
     acceptBooking: (bookingid, adminid, callback) => {
-        const query = 'UPDATE booking SET status = "1", updatedby = ? WHERE bookingid = ?';  //pending-status(0), accepted-status(1), rejected-status(2)
+        const query = 'UPDATE booking SET status = "1", updatedby = ?, updatedDate = NOW() WHERE bookingid = ?';  //pending-status(0), accepted-status(1), rejected-status(2)
         pool.query(query, [adminid, bookingid], callback);
     },
+    
     rejectBooking: (bookingid, callback) => {
         const query = 'UPDATE booking set deleteFlag ="1"  WHERE bookingid=?';  //pending-status(0) , accepted-status() , rejected-status(1)
         pool.query(query, [bookingid], callback)
