@@ -33,7 +33,7 @@ const eventModel = {
         pool.query(query, [name], callback);
     },
     viewEvent: (callback) => {
-        const query = 'SELECT * FROM activity';
+        const query = 'SELECT * FROM activity WHERE deleteFlag != 1';
         pool.query(query, callback);
     },
 
