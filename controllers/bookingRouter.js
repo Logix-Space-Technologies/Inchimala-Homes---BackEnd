@@ -42,20 +42,23 @@ router.post('/viewRoomBooking', (req, res) => {
 
 //Reject Booking
 router.post('/rejectBooking', (req, res) => {
-    var bookingid = req.body.bookingid
+    const { bookingid, adminid } = req.body
 
-    bookingModel.rejectBooking(bookingid, (error, results) => {
+    if (!bookingid || !adminid) {
+        res.status(400).send('Booking ID and Admin ID are required');
+        return;
+    }
+
+    bookingModel.rejectBooking(bookingid, adminid, (error, results) => {
         if (error) {
-            res.json({status:'Error retrieving  data'})
+            res.json({status:'Error updating booking data'})
             return;
         }
-        if (results.length > 0) {
-            res.json({status:results[0]})
+        if (results.affectedRows > 0) {
+            res.json({status :`Booking Rejected with ID: ${bookingid}`})
+        } else {
+            res.json({status:`Booking not found with ID: ${bookingid}`})
         }
-        else {
-            res.json({status:`Booking rejected with ID : ${bookingid}`})
-        }
-
     });
 });
 
