@@ -57,7 +57,7 @@ router.post('/adminlogin', (req, res) => {
                      // Successful login
             return res.json({
                 status: "Success",
-                adminData: admin,
+                "adminData": admin,
                 "token":admintoken
             });
                 } 
