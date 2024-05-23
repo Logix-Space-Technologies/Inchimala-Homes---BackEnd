@@ -61,9 +61,13 @@ router.post('/searchactivity', (req, res) => {
 });
 
 
-router.post('/updateevent', async (req, res) => {
-    const activityId = req.body.activityid; // Extract activityid from the request body
+router.post('/updateEvent', upload.single('photo'), async (req, res) => {
+    const activityId = req.body.activityid;
     const eventData = req.body;
+
+    if (req.file) {
+        eventData.photo = req.file.filename; // Save the filename in the event data
+    }
 
     eventModel.updateEvent(activityId, eventData, (error, results) => {
         if (error) {
@@ -74,6 +78,7 @@ router.post('/updateevent', async (req, res) => {
         res.status(200).send(`Event with ID ${activityId} updated successfully`);
     });
 });
+
 
 
 
