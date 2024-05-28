@@ -89,16 +89,25 @@ router.post('/deletecaretaker',(req,res)=>{
 
 });
 
-router.post('/update', (req, res) => {
-    const { caretakerId, ...updatedData } = req.body;
-caretakerModel.updateCaretaker(caretakerId, updatedData, (error, results) => {
+
+router.post('/updateCaretaker', upload.single('photo'), async (req, res) => {
+    const caretakerId = req.body.caretakerid;
+    const updatedData = req.body;
+
+    if (req.file) {
+        updatedData.photo = req.file.filename; // Save the filename in the event data
+    }
+
+    caretakerModel.updateCaretaker(caretakerId, updatedData, (error, results) => {
         if (error) {
             res.status(500).send('Error updating caretaker data: ' + error);
             return;
         }
-        res.status(200).send('Caretaker with ID ${caretakerId} updated successfully');
+
+        res.status(200).send(`caretaker with ID ${caretakerId} updated successfully`);
     });
 });
+
 router.post('/viewcaretaker', (req, res) => {
     caretakerModel.getAllCaretakers((error, caretakers) => {
         if (error) {
