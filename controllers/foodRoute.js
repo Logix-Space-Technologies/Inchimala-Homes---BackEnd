@@ -42,21 +42,7 @@ router.post('/deletefood', (req, res) => {
 });
 
 
-router.post("/updatefood", (req, res) => {
-    const { foodid, ...updatedFoodData } = req.body; 
 
-    if (!foodid) {
-        return res.status(400).send('Food ID is missing');
-    }
-
-    foodModel.updateFood(foodid, updatedFoodData, (error, results) => { 
-        if (error) { 
-            res.status(500).send('Error updating food: ' + error); 
-            return; 
-        } 
-        res.status(200).send(`Food with ID ${foodid} updated successfully`); 
-    }); 
-});
 
 
 
@@ -308,6 +294,28 @@ router.post('/viewCurrentFoodOrders', (req, res) => {
             return;
         }
         res.status(200).json(results);
+    });
+});
+
+router.post('/updatefood', upload.single('photo'), async (req, res) => {
+    const foodId = req.body.foodid;
+    const newData = req.body;
+
+    if (!foodId) {
+        return res.status(400).send('Food ID is missing');
+    }
+
+    if (req.file) {
+        newData.photo = req.file.filename; // Save the filename in the food data
+    }
+
+    foodModel.updateFood(foodId, newData, (error, results) => {
+        if (error) {
+            res.status(500).send('Error updating food: ' + error);
+            return;
+        }
+
+        res.status(200).send(`Food with ID ${foodId} updated successfully`);
     });
 });
 
