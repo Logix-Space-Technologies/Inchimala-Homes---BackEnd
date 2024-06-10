@@ -61,21 +61,25 @@ router.post('/searchactivity', (req, res) => {
 });
 
 
-router.post('/updateEvent', upload.single('photo'), async (req, res) => {
+router.post('/updateEvent', upload.single('file'), async (req, res) => {
     const activityId = req.body.activityid;
     const eventData = req.body;
+    console.log(activityId);
+    console.log(eventData);
 
     if (req.file) {
-        eventData.photo = req.file.filename; // Save the filename in the event data
+        eventData.photo = req.file.filename;
+        console.log(eventData);  // Save the filename in the event data
     }
-
+    delete eventData.file;
+    console.log(eventData);
     eventModel.updateEvent(activityId, eventData, (error, results) => {
         if (error) {
             res.status(500).send('Error updating event data: ' + error);
             return;
         }
 
-        res.status(200).send(`Event with ID ${activityId} updated successfully`);
+        res.status(200).send('Event with ID ${activityId} updated successfully');
     });
 });
 
