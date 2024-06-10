@@ -43,6 +43,7 @@ router.post('/adminlogin', (req, res) => {
                 return res.json({ status: "Error is" });
             }
             if (!isMatch) {
+                adminModel.logAdminAction(admin.adminid, 'Admin incorrect password')
                 return res.json({ status: "Invalid Password" });
             }
             jwt.sign({ email: emailid }, "inchimalaAdminLogin", { expiresIn: "1d" }, (error, admintoken) => {
@@ -55,8 +56,8 @@ router.post('/adminlogin', (req, res) => {
                         })
                 }
                 else {
-
-                    // INSERT INTO `admin_logs`( `admin_id`, `action`, `date`) VALUES (1,'logged via we app',now())
+                    adminModel.logAdminAction(admin.adminid, 'Admin Logged in')
+                   
                     // Successful login
                     return res.json({
                         status: "Success",

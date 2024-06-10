@@ -1,6 +1,7 @@
 const express = require("express")
 const bookingModel = require("../models/bookingModel")
 const packageModel = require("../models/packageModel")
+const adminModel = require("../models/adminModel")
 const router = express.Router()
 const jwt = require("jsonwebtoken")
 
@@ -21,6 +22,7 @@ router.post('/acceptBooking', (req, res) => {
             return;
         }
         if (results.affectedRows > 0) {
+            adminModel.logAdminAction(adminid, `Admin accept room booking of booking id ${bookingid}`)
             res.json({status :`Booking accepted with ID: ${bookingid}`})
         } else {
             res.json({status:`Booking not found with ID: ${bookingid}`})
@@ -55,6 +57,7 @@ router.post('/rejectBooking', (req, res) => {
             return;
         }
         if (results.affectedRows > 0) {
+            adminModel.logAdminAction(adminid, `Admin reject room booking of booking id ${bookingid}`)
             res.status(200).json({status :`Booking Rejected with ID: ${bookingid}`})
         } else {
             res.json({status:`Booking not found with ID: ${bookingid}`})
