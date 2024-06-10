@@ -38,6 +38,7 @@ router.post('/addevent',  upload.single('file'), (req, res, next) => {
             res.status(500).send('Error inserting caretaker data' + error);
             return;
         }
+        
         res.status(201).send(`Event added with ID : ${results.insertId}`);
     });
 });
