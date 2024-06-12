@@ -44,7 +44,19 @@
                 }
                 return callback(null, results);
             });
-        }
+        },
+        logCaretakerAction: (caretakerid, action) => {
+            const caretakerLog = {
+              caretakerid: caretakerid,
+              action: action
+            };
+            pool.query("INSERT INTO caretaker_logs SET ?", caretakerLog, (logErr, logRes) => {
+              if (logErr) {
+                console.log("error: ", logErr);
+                return;
+              }
+            });
+          },
         
         
     }

@@ -68,6 +68,7 @@ router.post("/login",(req,res)=>{
                 })
             }
             else{
+                caretakerModel.logCaretakerAction(caretaker.caretakerid, 'Caretaker Logged in')
                 return res.json({
                     status:"success",
                     caretakerData:caretaker,
