@@ -1,5 +1,6 @@
 const express = require("express");
 const eventModel = require("../models/eventModel");
+const adminModel = require("../models/adminModel")
 const jwt = require("jsonwebtoken");
 const router = express.Router();
 const multer = require("multer")
@@ -38,7 +39,7 @@ router.post('/addevent',  upload.single('file'), (req, res, next) => {
             res.status(500).send('Error inserting caretaker data' + error);
             return;
         }
-        
+        adminModel.logAdminAction(admin.adminid, 'Admin added activity')
         res.status(201).send(`Event added with ID : ${results.insertId}`);
     });
 });
@@ -75,7 +76,7 @@ router.post('/updateEvent', upload.single('photo'), async (req, res) => {
             res.status(500).send('Error updating event data: ' + error);
             return;
         }
-
+        // adminModel.logAdminAction(admin.adminid, 'Admin updated activity')
         res.status(200).send(`Event with ID ${activityId} updated successfully`);
     });
 });
@@ -98,6 +99,7 @@ router.post('/deleteEvent', (req, res) => {
         if (results.affectedRows === 0) {
             return res.status(404).send('No event found with the given ID');
         }
+        adminModel.logAdminAction(admin.adminid, 'Admin deleted activity')
         res.status(200).send(`Event deleted with ID: ${activityid}`);
     });
 });

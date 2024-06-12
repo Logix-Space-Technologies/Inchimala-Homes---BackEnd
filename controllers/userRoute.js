@@ -1,6 +1,5 @@
 const express = require("express")
 const userModel = require("../models/user")
-const foodModel=require("../models/foodModel")
 const router = express.Router()
 const bcrypt = require("bcryptjs")
 const jwt = require("jsonwebtoken")
@@ -40,7 +39,7 @@ const upload = multer({
 
 
 
-router.post('/signup', upload.single('file'), async (req, res,next) => {
+router.post('/signup', upload.single('file'), async (req, res, next) => {
     try {
         const { password } = req.body; // Destructure password directly from req.body
         if (!password) {
@@ -52,10 +51,10 @@ router.post('/signup', upload.single('file'), async (req, res,next) => {
         const { filename: imagePath } = req.file;
 
         const hashedPassword = await hashPasswordGenerator(password);
-        console.log(hashedPassword) 
+        console.log(hashedPassword)
         req.body.password = hashedPassword; // Update req.body directly
-        
-        userModel.insertuser(req.body.name,req.body.emailid,req.body.contactno,req.body.password,req.body.aadharNo,req.body.address,req.body.pincode,req.body.bookingtype,imagePath, (error, results) => {
+
+        userModel.insertuser(req.body.name, req.body.emailid, req.body.contactno, req.body.password, req.body.aadharNo, req.body.address, req.body.pincode, req.body.bookingtype, imagePath, (error, results) => {
             if (error) {
                 return res.status(500).json({ message: error.message });
             }
@@ -79,39 +78,40 @@ router.post('/view', (req, res) => {
 
 
 router.post('/userlogin', (req, res) => {
-    const { emailid,password } = req.body;
+    const { emailid, password } = req.body;
 
     userModel.loginUser(emailid, (error, user) => {
         if (error) {
-            return res.json({status: "Error"});
+            return res.json({ status: "Error" });
         }
         if (!user) {
-            return res.json({status: "Invalid Email ID"});
+            return res.json({ status: "Invalid Email ID" });
         }
         // Now user is found, let's compare the password
         bcrypt.compare(password, user.password, (err, isMatch) => {
             if (err) {
-                return res.json({status: "Error is"});
+                return res.json({ status: "Error is" });
             }
             if (!isMatch) {
-                return res.json({status: "Invalid Password"});
+                return res.json({ status: "Invalid Password" });
             }
-            
-            jwt.sign({email:emailid},"inchimalaUserLogin",{expiresIn:"1d"},(error,token)=>{
+
+            jwt.sign({ email: emailid }, "inchimalaUserLogin", { expiresIn: "1d" }, (error, token) => {
                 if (error) {
 
                     res.json(
-                        {status : "error",
-                        "error":error
-                    })
+                        {
+                            status: "error",
+                            "error": error
+                        })
                 } else {
-                    
-                // Successful login
-            return res.json({
-                status: "Success",
-                userData: user,
-                "token" : token
-            }); 
+                    userModel.logUserAction(user.userid, 'User Logged in')
+                    // Successful login
+                    return res.json({
+                        status: "Success",
+                        userData: user,
+                        "token": token
+                    });
 
                 }
             })
@@ -123,7 +123,7 @@ router.post('/userlogin', (req, res) => {
 //router for search user
 
 router.post('/searchuser', (req, res) => {
-    const { name } = req.body; 
+    const { name } = req.body;
     if (!name) {
         return res.status(400).json({ error: 'Please enter the user name' });
     }
@@ -134,40 +134,42 @@ router.post('/searchuser', (req, res) => {
         }
 
         if (results.length === 0) {
-            return res.status(404).json({ status:  'No such user' });
-            }
-        res.status(200).send(results); 
+            return res.status(404).json({ status: 'No such user' });
+        }
+        res.status(200).send(results);
     });
 });
 
-router.post('/userprofile',(req,res)=>{
+router.post('/userprofile', (req, res) => {
+    const token = req.headers["token"]
     jwt.verify(token, "inchimalaUserLogin", async (error, decoded) => {
 
         if (decoded && decoded.email) {
 
             try {
-    
-                userModel.userprofile(req.body.userid,(error,results)=>{
-                    if(error){
-                        return res.status(500).json({ error: 'Error viewing profile: ' + error.message})
+
+                userModel.userprofile(req.body.userid, (error, results) => {
+                    if (error) {
+                        return res.status(500).json({ error: 'Error viewing profile: ' + error.message })
                     }
-                    if(results.length === 0 ){
-                        return res.status(404).json({status:  'No such user' })
+                    if (results.length === 0) {
+                        return res.status(404).json({ status: 'No such user' })
                     }
-                    res.status(200).send(results); 
+                    userModel.logUserAction(req.body.userid, 'User viewed profile ')
+                    res.status(200).send(results);
                 });
-            }catch (err){
-                res.status(500).json({error:err.message})
+            } catch (err) {
+                res.status(500).json({ error: err.message })
             }
 
         }
-        else{
+        else {
             res.json(
                 { status: "unauthorized user" }
             )
         }
-    })    
+    })
 });
 
-module.exports=router
+module.exports = router
 
