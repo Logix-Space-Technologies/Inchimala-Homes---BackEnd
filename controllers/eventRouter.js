@@ -4,7 +4,7 @@ const adminModel = require("../models/adminModel")
 const jwt = require("jsonwebtoken");
 const router = express.Router();
 const multer = require("multer")
-
+const userModel = require("../models/user")
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -220,6 +220,68 @@ router.post('/viewuseractivity', (req, res) => {
     });
 });
 
+router.post('/bookAcitivty', async (req, res) => {
+
+            try {
+                const { userid, activityid } = req.body;
+
+                if (!userid || !activityid) {
+                    return res.status(400).json({ error: 'Please provide user ID, food ID, and quantity' });
+                }
+
+                //retrive user details
+                userModel.getUserDetails(userid, (error, user) => {
+                    if (error) {
+                        return res.status(500).json({ error: 'Error booking Activity: ' + error.message });
+                    }
+                    if (!user) {
+                        return res.status(404).json({ error: 'No such user exists with ID: ' + userid });
+                    }
+                })
+
+                // Retrieve Acitivity details
+                eventModel.viewEvent(activityid, (error, ActivityDetails) => {
+                    if (error) {
+                        return res.status(500).json({ error: 'Error retrieving Activity details: ' + error });
+                    }
+
+                    if (!ActivityDetails) {
+                        return res.status(404).json({ error: 'Activity not found' });
+                    }
+
+                    // const totalPrice = quantity * foodDetails.price; // Calculate total price
+
+                    // Prepare booking data
+                    const ActivityData = {
+                        userid,
+                        activityidid,
+                        status: 0 //order placed:0,order accepted:0,..
+                    };
+
+
+                    // Insert booking record
+                    userModel.bookActivity(bookingData, (error) => {
+                        if (error) {
+                            return res.status(500).json({ error: 'Error booking food: ' + error });
+                        }
+
+                        // Prepare response data
+                        const responseData = {
+                            userid,
+                            activityid,
+                            status: 0
+                        };
+
+                        res.status(201).json({ status: 'success', bookingDetails: responseData });
+                    });
+                });
+            } catch (err) {
+                res.status(500).json({ error: err.message });
+            }
+
+
+       
+    });
 
 
 
