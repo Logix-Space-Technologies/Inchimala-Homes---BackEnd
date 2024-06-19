@@ -254,13 +254,13 @@ router.post('/bookAcitivty', async (req, res) => {
                     // Prepare booking data
                     const ActivityData = {
                         userid,
-                        activityidid,
+                        activityid,
                         status: 0 //order placed:0,order accepted:0,..
                     };
 
 
                     // Insert booking record
-                    userModel.bookActivity(bookingData, (error) => {
+                    userModel.bookActivity(ActivityData, (error) => {
                         if (error) {
                             return res.status(500).json({ error: 'Error booking food: ' + error });
                         }
