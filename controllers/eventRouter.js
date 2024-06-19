@@ -220,69 +220,124 @@ router.post('/viewuseractivity', (req, res) => {
     });
 });
 
-router.post('/bookAcitivty', async (req, res) => {
+// router.post('/bookActivity', async (req, res) => {
 
-            try {
-                const { userid, activityid } = req.body;
+//             try {
+//                 const { userid, activityid } = req.body;
 
-                if (!userid || !activityid) {
-                    return res.status(400).json({ error: 'Please provide user ID, food ID, and quantity' });
-                }
+//                 if (!userid || !activityid) {
+//                     return res.status(400).json({ error: 'Please provide user ID, food ID, and quantity' });
+//                 }
 
-                //retrive user details
-                userModel.getUserDetails(userid, (error, user) => {
-                    if (error) {
-                        return res.status(500).json({ error: 'Error booking Activity: ' + error.message });
-                    }
-                    if (!user) {
-                        return res.status(404).json({ error: 'No such user exists with ID: ' + userid });
-                    }
-                })
+//                 //retrive user details
+//                 userModel.getUserDetails(userid, (error, user) => {
+//                     if (error) {
+//                         return res.status(500).json({ error: 'Error booking Activity: ' + error.message });
+//                     }
+//                     if (!user) {
+//                         return res.status(404).json({ error: 'No such user exists with ID: ' + userid });
+//                     }
+//                 })
 
-                // Retrieve Acitivity details
-                eventModel.viewEvent(activityid, (error, ActivityDetails) => {
-                    if (error) {
-                        return res.status(500).json({ error: 'Error retrieving Activity details: ' + error });
-                    }
+//                 // Retrieve Acitivity details
+//                 eventModel.getEventDetails(activityid, (error, ActivityDetails) => {
+//                     if (error) {
+//                         return res.status(500).json({ error: 'Error retrieving Activity details: ' + error });
+//                     }
 
-                    if (!ActivityDetails) {
-                        return res.status(404).json({ error: 'Activity not found' });
-                    }
+//                     if (!ActivityDetails) {
+//                         return res.status(404).json({ error: 'Activity not found' });
+//                     }
 
-                    // const totalPrice = quantity * foodDetails.price; // Calculate total price
+//                     // const totalPrice = quantity * foodDetails.price; // Calculate total price
 
-                    // Prepare booking data
-                    const ActivityData = {
-                        userid,
-                        activityid,
-                        status: 0 //order placed:0,order accepted:0,..
-                    };
+//                     // Prepare booking data
+//                     const ActivityData = {
+//                         userid,
+//                         activityid,
+//                         status: 0 //order placed:0,order accepted:0,..
+//                     };
 
 
-                    // Insert booking record
-                    userModel.bookActivity(ActivityData, (error) => {
-                        if (error) {
-                            return res.status(500).json({ error: 'Error booking food: ' + error });
-                        }
+//                     // Insert booking record
+//                     userModel.bookActivity(ActivityData, (error) => {
+//                         if (error) {
+//                             return res.status(500).json({ error: 'Error booking food: ' + error });
+//                         }
 
-                        // Prepare response data
-                        const responseData = {
-                            userid,
-                            activityid,
-                            status: 0
-                        };
+//                         // Prepare response data
+//                         const responseData = {
+//                             userid,
+//                             activityid,
+//                             status: 0
+//                         };
 
-                        res.status(201).json({ status: 'success', bookingDetails: responseData });
-                    });
-                });
-            } catch (err) {
-                res.status(500).json({ error: err.message });
-            }
+//                         res.status(201).json({ status: 'success', bookingDetails: responseData });
+//                     });
+//                 });
+//             } catch (err) {
+//                 res.status(500).json({ error: err.message });
+//             }
 
 
        
-    });
+//     });
 
+
+router.post('/bookActivity', async (req, res) => {
+    try {
+        const { userid, activityid } = req.body;
+
+        if (!userid || !activityid) {
+            return res.status(400).json({ error: 'Please provide user ID and activity ID' });
+        }
+
+        // Retrieve user details
+        userModel.getUserDetails(userid, (error, user) => {
+            if (error) {
+                return res.status(500).json({ error: 'Error retrieving user details: ' + error.message });
+            }
+            if (!user) {
+                return res.status(404).json({ error: 'No such user exists with ID: ' + userid });
+            }
+
+            // Retrieve Activity details
+            eventModel.getEventDetails(activityid, (error, activityDetails) => {
+                if (error) {
+                    return res.status(500).json({ error: 'Error retrieving activity details: ' + error.message });
+                }
+                if (!activityDetails || activityDetails.length === 0) {
+                    return res.status(404).json({ error: 'Activity not found with ID: ' + activityid });
+                }
+
+                // Prepare booking data
+                const activityData = {
+                    userid,
+                    activityid,
+                    status: 0 // Assuming this is how you set the status initially
+                };
+
+                // Book activity
+                eventModel.bookActivity(activityData, (error) => {
+                    if (error) {
+                        return res.status(500).json({ error: 'Error booking activity: ' + error.message });
+                    }
+
+                    // Prepare response data
+                    const responseData = {
+                        userid,
+                        activityid,
+                        status: activityData.status
+                    };
+
+                    res.status(201).json({ status: 'success', bookingDetails: responseData });
+                });
+            });
+        });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
 
 
 module.exports = router;

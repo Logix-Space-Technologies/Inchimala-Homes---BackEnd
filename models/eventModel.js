@@ -63,6 +63,16 @@ const eventModel = {
         const query = 'INSERT INTO activitybooking SET ?';
         pool.query(query, bookingData, callback);
     },
+
+    getUserDetails: (userid, callback) => {
+        const query = 'SELECT * FROM users WHERE userid = ?';
+        pool.query(query, [userid], callback);
+    },
+    getEventDetails: (activityid, callback) => {
+        const query = 'SELECT * FROM activity WHERE activityid = ? AND deleteFlag != 1';
+        pool.query(query, [activityid], callback);
+    },
+    
     
 
 
