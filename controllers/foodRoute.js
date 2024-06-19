@@ -51,85 +51,109 @@ router.post('/deletefood', (req, res) => {
 //BOOKING FOOD BY USER
 
 router.post('/bookfood', async (req, res) => {
+    console.log("Request body:", req.body); // Log the request body for debugging
 
-    const token = req.headers["token"]
+    const token = req.headers["token"];
     jwt.verify(token, "inchimalaUserLogin", async (error, decoded) => {
-
         if (decoded && decoded.email) {
-
             try {
-                const { userid, foodid, quantity } = req.body;
+                const { userid, foodItems } = req.body; // Expecting an array of { foodid, quantity }
 
-                if (!userid || !foodid || !quantity) {
-                    return res.status(400).json({ error: 'Please provide user ID, food ID, and quantity' });
+                if (!userid || !foodItems || !Array.isArray(foodItems) || foodItems.length === 0) {
+                    return res.status(400).json({ error: 'Please provide user ID and an array of food items with quantities' });
                 }
 
-                //retrive user details
-                userModel.getUserDetails(userid, (error, user) => {
+                // Retrieve user details
+                foodModel.getUserDetails(userid, (error, user) => {
                     if (error) {
-                        return res.status(500).json({ error: 'Error booking food: ' + error.message });
+                        return res.status(500).json({ error: 'Error retrieving user details: ' + error.message });
                     }
                     if (!user) {
                         return res.status(404).json({ error: 'No such user exists with ID: ' + userid });
                     }
-                })
+                });
 
-                // Retrieve food details
-                foodModel.getFoodDetails(foodid, (error, foodDetails) => {
+                let totalPrice = 0;
+                const foodDetailsArray = [];
+
+                // Retrieve food details and calculate total price
+                for (const item of foodItems) {
+                    await new Promise((resolve, reject) => {
+                        foodModel.getFoodDetails(item.foodid, (error, foodDetails) => {
+                            if (error) {
+                                reject(error);
+                            } else if (!foodDetails) {
+                                reject(new Error('Food not found: ' + item.foodid));
+                            } else {
+                                const priceForItem = item.quantity * foodDetails.price;
+                                totalPrice += priceForItem;
+                                foodDetailsArray.push({ foodDetails, quantity: item.quantity, price: foodDetails.price });
+                                resolve();
+
+                            }
+                        });
+                    });
+                }
+
+                // Prepare booking details data
+                const bookingDetailsData = foodDetailsArray.map(item => ({
+                    userid,
+                    foodid: item.foodDetails.foodid,
+                    quantity: item.quantity,
+                    priceforsingleitem: item.price
+
+                }));
+
+                // Insert booking details first
+                foodModel.addBookingDetails(bookingDetailsData, (error) => {
                     if (error) {
-                        return res.status(500).json({ error: 'Error retrieving food details: ' + error });
+                        console.error('Error adding booking details:', error);
+                        return res.status(500).json({ error: 'Error adding booking details: ' + error });
                     }
 
-                    if (!foodDetails) {
-                        return res.status(404).json({ error: 'Food not found' });
-                    }
 
-                    const totalPrice = quantity * foodDetails.price; // Calculate total price
 
                     // Prepare booking data
                     const bookingData = {
                         userid,
-                        foodid,
-                        quantity,
                         totalprice: totalPrice,
-                        status: 0 //order placed:0,order accepted:0,..
+                        status: 0, // order placed:0, order accepted:1, etc.
                     };
 
-
                     // Insert booking record
-                    userModel.bookFood(bookingData, (error) => {
+                    foodModel.bookFood(bookingData, (error, bookingId) => {
                         if (error) {
+                            console.error('Error booking food:', error);
                             return res.status(500).json({ error: 'Error booking food: ' + error });
                         }
 
-                        // Prepare response data
                         const responseData = {
                             userid,
-                            foodid,
-                            foodname: foodDetails.name,
-                            quantity,
-                            totalprice: totalPrice,
+                            bookingid: bookingId,
+                            totalprice:totalPrice,
+                            items: foodDetailsArray.map(item => ({
+                                foodid: item.foodDetails.foodid,
+                                foodname: item.foodDetails.name,
+                                quantity: item.quantity,
+                                totalprice: item.quantity * item.foodDetails.price
+                            })),
                             status: 0
                         };
-
+                        
                         res.status(201).json({ status: 'success', bookingDetails: responseData });
                     });
                 });
+
             } catch (err) {
+                console.error('Error:', err.message);
                 res.status(500).json({ error: err.message });
             }
-
+        } else {
+            res.json({ status: "unauthorized user" });
         }
-        else {
-
-            res.json(
-                { status: "unauthorized user" }
-            )
-
-        }
-    })
-
+    });
 });
+
 
 
 module.exports = router
@@ -162,9 +186,9 @@ router.post('/rejectFoodBooking', (req, res) => {
             });
         }
         else {
-            
+
             res.json(
-                {status : "unauthorized user"}
+                { status: "unauthorized user" }
             )
 
         }
@@ -175,117 +199,117 @@ router.post('/rejectFoodBooking', (req, res) => {
 
 
 
-    //to view food details
+//to view food details
 
-    router.post('/viewfood', (req, res) => {
-        foodModel.viewFood((error, results) => {
+router.post('/viewfood', (req, res) => {
+    foodModel.viewFood((error, results) => {
 
-            res.json(results)
-            console.log(results)
-        })
-    });
+        res.json(results)
+        console.log(results)
+    })
+});
 
-    //Accept Food Booking
-    router.post('/acceptFoodBooking', (req, res) => {
+//Accept Food Booking
+router.post('/acceptFoodBooking', (req, res) => {
 
-        const token = req.headers["token"]
-        jwt.verify(token, "inchimalaCaretakerLogin", async (error, decoded) => {
-            if (decoded && decoded.email) {
+    const token = req.headers["token"]
+    jwt.verify(token, "inchimalaCaretakerLogin", async (error, decoded) => {
+        if (decoded && decoded.email) {
 
-                var foodid = req.body.foodid
-                foodModel.acceptFoodBooking(foodid, (error, results) => {
-                    if (error) {
-                        res.status(500).send('Error retrieving  data');
-                        return;
-                    }
-                    if (results.length > 0) {
-                        res.status(200).json(results[0]);
-                    }
-                    else {
-                        res.status(404).send(`Booking accepted with ID : ${foodid}`);
-                    }
-                });
-            }
-
-            else {
-                res.json(
-                    { status: "unauthorized user" }
-                )
-            }
-        })
-    });
-
-    //update food booking status
-
-    router.post('/updateFoodBookingStatus', (req, res) => {
-        const id = req.body.id;
-        const newStatus = req.body.newStatus;
-        // Validate the status
-        if (![3, 4, 5].includes(newStatus)) {
-            return res.status(400).json({ error: 'Invalid status provided' });
+            var foodid = req.body.foodid
+            foodModel.acceptFoodBooking(foodid, (error, results) => {
+                if (error) {
+                    res.status(500).send('Error retrieving  data');
+                    return;
+                }
+                if (results.length > 0) {
+                    res.status(200).json(results[0]);
+                }
+                else {
+                    res.status(404).send(`Booking accepted with ID : ${foodid}`);
+                }
+            });
         }
 
-        foodModel.updateFoodBookingStatus(id, newStatus, (error, results) => {
-            if (error) {
-                return res.status(500).send('Error updating food booking status: ' + error);
-            }
-
-            res.status(200).send(`Food booking status updated to ${newStatus} for ID: ${id}`);
-        });
-    });
-
-
-
-
-
-    ////////////////////////////////////////////////
-
-
-
-    const storage = multer.diskStorage({
-        destination: function (req, file, cb) {
-            cb(null, 'images/');
-        },
-        filename: function (req, file, cb) {
-            const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-            const fileName = uniqueSuffix + '-' + file.originalname;
-            cb(null, fileName);
-        },
-    });
-
-    const upload = multer({
-        storage: storage,
-        fileFilter: function (req, file, cb) {
-            if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
-                return cb(new Error('Only image files (jpg, jpeg, png, gif) are allowed'));
-            }
-            cb(null, true);
+        else {
+            res.json(
+                { status: "unauthorized user" }
+            )
         }
-    });
+    })
+});
 
+//update food booking status
 
-    //route to food add
+router.post('/updateFoodBookingStatus', (req, res) => {
+    const id = req.body.id;
+    const newStatus = req.body.newStatus;
+    // Validate the status
+    if (![3, 4, 5].includes(newStatus)) {
+        return res.status(400).json({ error: 'Invalid status provided' });
+    }
 
-    router.post('/addfood', upload.single('file'), (req, res, next) => {
-        // Check if file was uploaded
-        if (!req.file) {
-            return res.status(400).json({ error: 'No file uploaded' });
+    foodModel.updateFoodBookingStatus(id, newStatus, (error, results) => {
+        if (error) {
+            return res.status(500).send('Error updating food booking status: ' + error);
         }
 
-        const { filename: imagePath } = req.file;
-
-        foodModel.insertfood(req.body.name, req.body.type, req.body.description, req.body.price, req.body.addedBy, imagePath, (error, result) => {
-
-            if (error) {
-                console.error('Error inserting image path into foodModel:', error);
-                res.status(500).json({ error: 'Error inserting image path into foodModel' });
-            } else {
-                console.log('Image path inserted into foodModel successfully:', result);
-                res.status(200).json({ success: 'data inserted' });
-            }
-        });
+        res.status(200).send(`Food booking status updated to ${newStatus} for ID: ${id}`);
     });
-    // View Current food orders
+});
+
+
+
+
+
+////////////////////////////////////////////////
+
+
+
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, 'images/');
+    },
+    filename: function (req, file, cb) {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        const fileName = uniqueSuffix + '-' + file.originalname;
+        cb(null, fileName);
+    },
+});
+
+const upload = multer({
+    storage: storage,
+    fileFilter: function (req, file, cb) {
+        if (!file.originalname.match(/\.(jpg|jpeg|png|gif)$/)) {
+            return cb(new Error('Only image files (jpg, jpeg, png, gif) are allowed'));
+        }
+        cb(null, true);
+    }
+});
+
+
+//route to food add
+
+router.post('/addfood', upload.single('file'), (req, res, next) => {
+    // Check if file was uploaded
+    if (!req.file) {
+        return res.status(400).json({ error: 'No file uploaded' });
+    }
+
+    const { filename: imagePath } = req.file;
+
+    foodModel.insertfood(req.body.name, req.body.type, req.body.description, req.body.price, req.body.addedBy, imagePath, (error, result) => {
+
+        if (error) {
+            console.error('Error inserting image path into foodModel:', error);
+            res.status(500).json({ error: 'Error inserting image path into foodModel' });
+        } else {
+            console.log('Image path inserted into foodModel successfully:', result);
+            res.status(200).json({ success: 'data inserted' });
+        }
+    });
+});
+// View Current food orders
 
 router.post('/viewCurrentFoodOrders', (req, res) => {
     foodModel.viewCurrentFoodOrders((error, results) => {
@@ -319,5 +343,5 @@ router.post('/updatefood', upload.single('photo'), async (req, res) => {
     });
 });
 
-    module.exports = router
+module.exports = router
 
