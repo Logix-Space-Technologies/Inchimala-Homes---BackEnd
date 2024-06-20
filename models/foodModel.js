@@ -100,14 +100,18 @@ const foodModel = {
         pool.query(query, callback);
     },
 
-    rejectFoodBooking: (foodid, callback) => {
-        const query = 'UPDATE foodbooking set status="2" WHERE foodid=?';  // rejected-status(2)
-        pool.query(query, [foodid], callback)
+    rejectFoodBooking: (caretakerid,bookingid, callback) => {
+        const query = 'UPDATE foodbooking SET  deleteFlag = "1", updatedby = ?, updatedDate = NOW() WHERE bookingid = ?';  // pending-status(0), accepted-status(1), rejected-status(2)
+        pool.query(query, [caretakerid, bookingid], callback);
+        // const query = 'UPDATE foodbooking set status="2" WHERE foodid=?';  // rejected-status(2)
+        // pool.query(query, [foodid], callback)
     },
 
-    acceptFoodBooking: (foodid, callback) => {
-        const query = 'UPDATE foodbooking set status="1" WHERE foodid=?';  //pending-status(0) , accepted-status(1) , rejected-status(2)
-        pool.query(query, [foodid], callback)
+    acceptFoodBooking: (caretakerid,bookingid, callback) => {
+        const query = 'UPDATE foodbooking SET status = "1", updatedby = ?, updatedDate = NOW() WHERE bookingid = ?';  //pending-status(0), accepted-status(1), rejected-status(2)
+        pool.query(query, [caretakerid, bookingid], callback);
+        // const query = 'UPDATE foodbooking set status="1" WHERE foodid=?';  //pending-status(0) , accepted-status(1) , rejected-status(2)
+        // pool.query(query, [foodid], callback)
     },
 
     updateFoodBookingStatus: (id, newStatus, callback) => {
