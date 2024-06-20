@@ -69,34 +69,20 @@ router.post('/rejectBooking', (req, res) => {
 //To View Accepeted Room Bookings
 
 router.post('/viewAcceptedBooking', (req, res) => {
-
-    const token = req.headers["token"]
-    jwt.verify(token, "inchimalaAdminLogin", async (error, decoded) => {
-
-        if (decoded && decoded.email) {
-
-            bookingModel.viewAcceptedBooking((error, results) => {
-                if (error) {
-                    res.status(500).send('Error retrieving data');
-                    return;
-                }
-                if (results.length > 0) {
-                    res.status(200).json(results);
-                } else {
-
-                    res.status(404).send('No accepted bookings found');
-                }
-            });
+    bookingModel.viewAcceptedBooking((error, results) => {
+        if (error) {
+            res.status(500).send('Error retrieving data');
+            return;
         }
-        else {
+        if (results.length > 0) {
+            res.status(200).json(results);
+        } else {
 
-            res.json(
-                { status: "unauthorized user" }
-            )
-
+            res.status(404).send('No rejected bookings found');
         }
-    })
+    });
 });
+
 
 
 
