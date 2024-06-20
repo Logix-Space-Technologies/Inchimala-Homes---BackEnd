@@ -33,9 +33,18 @@ const bookingModel = {
     },
 
     datecheck: (checkin, checkout, callback) => {
-        const query = 'SELECT packageid FROM booking WHERE ((checkin >= ? AND checkin <= ?) OR (checkout >= ? AND checkout <= ?) OR (checkin <= ? AND checkout >= ?)) AND status="1";';
-        pool.query(query, [checkin, checkout, checkin, checkout, checkin, checkout], callback);
+        const query = `
+            SELECT b.packageid 
+            FROM booking b
+            INNER JOIN booking_dates_availability bda ON b.packageid = bda.packageid
+            WHERE bda.date >= ? AND bda.date <= ?
+              AND ((b.checkin >= ? AND b.checkin <= ?) OR (b.checkout >= ? AND b.checkout <= ?) OR (b.checkin <= ? AND b.checkout >= ?))
+              AND b.status = "1"
+        `;
+        pool.query(query, [checkin, checkout, checkin, checkout, checkin, checkout, checkin, checkout], callback);
     },
+    
+
     RoomBooking: (BookingData, callback) => {
         const query = 'INSERT INTO booking SET ?';
         pool.query(query, BookingData, callback)
