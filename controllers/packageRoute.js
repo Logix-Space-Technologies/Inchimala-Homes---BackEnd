@@ -105,6 +105,4 @@ router.post('/viewpackage', (req, res) => {
     })
 });
 
-
-
 module.exports=router
