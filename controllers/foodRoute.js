@@ -117,7 +117,7 @@ router.post('/bookfood', async (req, res) => {
                     const bookingData = {
                         userid,
                         totalprice: totalPrice,
-                        status: 0, // order placed:0, order accepted:1, etc.
+                        status: 0 // order placed:0, order accepted:1, etc.
                     };
 
                     // Insert booking record
