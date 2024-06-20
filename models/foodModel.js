@@ -80,11 +80,12 @@ const foodModel = {
             callback(null, results.insertId); // Ensure to return the insertId
         });
     },
-
+    
     addBookingDetails: (details, callback) => {
-        const query = 'INSERT INTO foodBookingDetails (bookingId, userid, foodid, quantity, priceforsingleitem) VALUES ?';
-        pool.query(query, [details.map(item => [item.bookingId, item.userid, item.foodid, item.quantity, item.priceforsingleitem])], callback);
+        const query = 'INSERT INTO foodBookingDetails (userid, bookingid, foodid, quantity, priceforsingleitem) VALUES ?';
+        pool.query(query, [details.map(item => [item.userid, item.bookingid, item.foodid, item.quantity, item.priceforsingleitem])], callback);
     },
+    
 
 
 

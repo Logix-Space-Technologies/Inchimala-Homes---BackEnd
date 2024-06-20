@@ -64,13 +64,16 @@ router.post('/bookfood', async (req, res) => {
                 }
 
                 // Retrieve user details
-                foodModel.getUserDetails(userid, (error, user) => {
-                    if (error) {
-                        return res.status(500).json({ error: 'Error retrieving user details: ' + error.message });
-                    }
-                    if (!user) {
-                        return res.status(404).json({ error: 'No such user exists with ID: ' + userid });
-                    }
+                const user = await new Promise((resolve, reject) => {
+                    foodModel.getUserDetails(userid, (error, user) => {
+                        if (error) {
+                            reject(new Error('Error retrieving user details: ' + error.message));
+                        } else if (!user) {
+                            reject(new Error('No such user exists with ID: ' + userid));
+                        } else {
+                            resolve(user);
+                        }
+                    });
                 });
 
                 let totalPrice = 0;
@@ -78,81 +81,96 @@ router.post('/bookfood', async (req, res) => {
 
                 // Retrieve food details and calculate total price
                 for (const item of foodItems) {
-                    await new Promise((resolve, reject) => {
+                    const foodDetails = await new Promise((resolve, reject) => {
                         foodModel.getFoodDetails(item.foodid, (error, foodDetails) => {
                             if (error) {
                                 reject(error);
                             } else if (!foodDetails) {
                                 reject(new Error('Food not found: ' + item.foodid));
                             } else {
-                                const priceForItem = item.quantity * foodDetails.price;
-                                totalPrice += priceForItem;
-                                foodDetailsArray.push({ foodDetails, quantity: item.quantity, price: foodDetails.price });
-                                resolve();
-
+                                resolve(foodDetails);
                             }
                         });
                     });
+                    const priceForItem = item.quantity * foodDetails.price;
+                    totalPrice += priceForItem;
+                    foodDetailsArray.push({ foodDetails, quantity: item.quantity, price: foodDetails.price });
                 }
 
-                // Prepare booking details data
+                // Generate unique booking ID
+                const generateBookingId = () => {
+                    const randomNumber = Math.floor(Math.random() * 1000000); // Adjust range as needed
+                    return `IHLFB-${randomNumber.toString().padStart(6, '0')}`; // Ensure it has 6 digits
+                };
+
+                const bookingId = generateBookingId();
+
+                // Prepare booking data
+                const bookingData = {
+                    userid,
+                    bookingid: bookingId, // Include booking ID
+                    totalprice: totalPrice,
+                    status: 0 // order placed: 0, order accepted: 1, etc.
+                };
+
+                // Insert booking record
+                await new Promise((resolve, reject) => {
+                    foodModel.bookFood(bookingData, (error) => {
+                        if (error) {
+                            console.error('Error booking food:', error);
+                            reject(new Error('Error booking food: ' + error));
+                        } else {
+                            resolve();
+                        }
+                    });
+                });
+
+                // Prepare booking details data with bookingId
                 const bookingDetailsData = foodDetailsArray.map(item => ({
                     userid,
+                    bookingid: bookingId, // Include booking ID
                     foodid: item.foodDetails.foodid,
                     quantity: item.quantity,
                     priceforsingleitem: item.price
-
                 }));
 
-                // Insert booking details first
-                foodModel.addBookingDetails(bookingDetailsData, (error) => {
-                    if (error) {
-                        console.error('Error adding booking details:', error);
-                        return res.status(500).json({ error: 'Error adding booking details: ' + error });
-                    }
-
-
-
-                    // Prepare booking data
-                    const bookingData = {
-                        userid,
-                        totalprice: totalPrice,
-                        status: 0 // order placed:0, order accepted:1, etc.
-                    };
-
-                    // Insert booking record
-                    foodModel.bookFood(bookingData, (error, bookingId) => {
+                // Insert booking details
+                await new Promise((resolve, reject) => {
+                    foodModel.addBookingDetails(bookingDetailsData, (error) => {
                         if (error) {
-                            console.error('Error booking food:', error);
-                            return res.status(500).json({ error: 'Error booking food: ' + error });
+                            console.error('Error adding booking details:', error);
+                            reject(new Error('Error adding booking details: ' + error));
+                        } else {
+                            resolve();
                         }
-
-                        const responseData = {
-                            userid,
-                            bookingid: bookingId,
-                            totalprice:totalPrice,
-                            items: foodDetailsArray.map(item => ({
-                                foodid: item.foodDetails.foodid,
-                                foodname: item.foodDetails.name,
-                                quantity: item.quantity,
-                                totalprice: item.quantity * item.foodDetails.price
-                            })),
-                            status: 0
-                        };
-                        
-                        res.status(201).json({ status: 'success', bookingDetails: responseData });
                     });
                 });
+
+                const responseData = {
+                    userid,
+                    bookingid: bookingId,
+                    totalprice: totalPrice,
+                    items: foodDetailsArray.map(item => ({
+                        foodid: item.foodDetails.foodid,
+                        foodname: item.foodDetails.name,
+                        quantity: item.quantity,
+                        totalprice: item.quantity * item.foodDetails.price
+                    })),
+                    status: 0
+                };
+
+                res.status(201).json({ status: 'success', bookingDetails: responseData });
 
             } catch (err) {
                 console.error('Error:', err.message);
                 res.status(500).json({ error: err.message });
             }
         } else {
-            res.json({ status: "unauthorized user" });
+            res.status(401).json({ status: "unauthorized user" });
         }
     });
 });
+
 
 
 

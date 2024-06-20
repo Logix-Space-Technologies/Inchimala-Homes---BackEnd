@@ -102,7 +102,7 @@ router.post('/deleteEvent', (req, res) => {
         if (results.affectedRows === 0) {
             return res.status(404).send('No event found with the given ID');
         }
-        adminModel.logAdminAction(admin.adminid, 'Admin deleted activity')
+        // adminModel.logAdminAction(adminid, 'Admin deleted activity')
         res.status(200).send(`Event deleted with ID: ${activityid}`);
     });
 });
