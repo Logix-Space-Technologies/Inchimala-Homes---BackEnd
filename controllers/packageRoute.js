@@ -104,5 +104,15 @@ router.post('/viewpackage', (req, res) => {
         console.log(results)
     })
 });
-
+ 
+router.post('/scheduler',(req,res)=>
+{
+    packageModel.schedulePackage((req.body.packageId,req.body.date,req.body.amount,(error,results)=>{
+        if (error) {
+            res.status(500).send('Error inserting package data'+error)
+            return
+        }
+        res.status(201).send(`package added with ID : ${results.insertId}`)
+    }))
+})
 module.exports=router
