@@ -19,12 +19,12 @@ const bookingModel = {
     },
     
     rejectBooking: (bookingid, adminid, callback) => {
-        const query = 'UPDATE booking SET status = "1", deleteFlag = "1", updatedby = ?, updatedDate = NOW() WHERE bookingid = ?';  // pending-status(0), accepted-status(1), rejected-status(2)
+        const query = 'UPDATE booking SET  deleteFlag = "1", updatedby = ?, updatedDate = NOW() WHERE bookingid = ?';  // pending-status(0), accepted-status(1), rejected-status(2)
         pool.query(query, [adminid, bookingid], callback);
     },
     
     viewRoomBooking: (callback) => {
-        const query = `SELECT booking.bookingid, booking.userid, user.name AS username, user.photo, user.contactno,booking.packageid, package.name AS packageName, booking.checkin, booking.checkout, booking.rooms,booking.adult,booking.children,booking.status,booking.deleteFlag,booking.activeFlag, booking.addedDate, booking.updatedDate,booking.addedBy, booking.updatedBy FROM booking JOIN user ON booking.userid = user.userid JOIN package ON booking.packageid = package.packageid WHERE booking.status = 0`;
+        const query = `SELECT booking.bookingid, booking.userid, user.name AS username, user.photo, user.contactno,booking.packageid, package.name AS packageName, booking.checkin, booking.checkout, booking.rooms,booking.adult,booking.children,booking.status,booking.deleteFlag,booking.activeFlag, booking.addedDate, booking.updatedDate,booking.addedBy, booking.updatedBy FROM booking JOIN user ON booking.userid = user.userid JOIN package ON booking.packageid = package.packageid WHERE booking.status = 0 and booking.deleteFlag=0  `;
         pool.query(query, callback);
     },
     viewAcceptedBooking: (callback) => {
