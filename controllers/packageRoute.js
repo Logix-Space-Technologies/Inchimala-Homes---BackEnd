@@ -112,7 +112,7 @@ router.post('/scheduler',(req,res)=>
             res.status(500).send('Error inserting package data'+error)
             return
         }
-        res.status(201).send(`package added with ID : ${results.insertId}`)
+        res.status(200).json({status:"package scheduled"})
     }))
 })
 module.exports=router
