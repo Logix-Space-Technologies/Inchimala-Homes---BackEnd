@@ -42,11 +42,17 @@ const packageModel={
         const query = `SELECT * FROM package WHERE packageid NOT IN (${placeholders})`;
         pool.query(query, packageIds, callback);
         },
-    schedulePackage:(packageid,date,amount,callback) => {
-       const query='INSERT INTO booking_dates_availability (packageid, date, amount)VALUES ((SELECT packageid FROM package WHERE packageid = ?), ?, ?)';
-        pool.query(query, [packageid,date,amount], callback)
+    schedulePackage: (packageid, date, amount, callback) => {
+        const query = 'INSERT INTO booking_dates_availability (packageid, date, amount) VALUES ((SELECT packageid FROM package WHERE packageid = ?), ?, ?)';
+        pool.query(query, [packageid, date, amount], callback);
     },
-
+    updateSchedule: (id, packageid, date, amount, callback) => {
+        const query = `
+            UPDATE booking_dates_availability SET packageid = (SELECT packageid FROM package WHERE packageid = ?), date = ?, amount = ? 
+            WHERE id = ?
+        `;
+        pool.query(query, [packageid, date, amount, id], callback);
+    },
 }
 
 
