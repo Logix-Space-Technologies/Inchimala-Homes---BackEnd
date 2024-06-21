@@ -28,7 +28,7 @@ const bookingModel = {
         pool.query(query, callback);
     },
     viewAcceptedBooking: (callback) => {
-        const query = 'SELECT booking.*,user.name AS username,user.photo,user.contactno,package.name FROM booking INNER JOIN user ON booking.userid=user.userid INNER JOIN package ON booking.packageid=package.packageid WHERE booking.deleteFlag="0" ';
+        const query = 'SELECT booking.*,user.name AS username,user.photo,user.contactno,package.name,package.price FROM booking INNER JOIN user ON booking.userid=user.userid INNER JOIN package ON booking.packageid=package.packageid WHERE booking.deleteFlag="0" ';
         pool.query(query, callback);
     },
 
