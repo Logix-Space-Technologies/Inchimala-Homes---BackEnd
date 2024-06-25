@@ -65,17 +65,33 @@ router.post('/deletePackage', (req, res) => {
     });
 });
 
-router.post("/updatepackage", async (req, res) => {
-    let { packageid, ...rest } = req.body; 
-    packageModel.updatePackage(packageid, rest, (error, results) => { 
+router.post('/updatepackage', upload.single('photo'), async (req, res) => {
+    try {
+      const { packageid, name, description, price } = req.body;
+      const photo = req.file ? req.file.filename : null;
+  
+      if (!packageid || !name || !description || !price) {
+        res.status(400).send('Missing required fields');
+        return;
+      }
+  
+      const updatedData = { name, description, price };
+      if (photo) {
+        updatedData.photo = photo;
+      }
+  
+      packageModel.updatePackage(packageid, updatedData, (error, results) => {
         if (error) {
-            res.status(500).send('Error updating package: ' + error); 
-            return;
+          res.status(500).send('Error updating package: ' + error);
+          return;
         }
         res.status(200).send('Package updated successfully');
-    });
-});
-
+      });
+    } catch (error) {
+      res.status(500).send('Error updating package: ' + error.message);
+    }
+  });
+  
 //router for search package
 
 router.post('/searchpackage', (req, res) => {
