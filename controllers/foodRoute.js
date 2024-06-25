@@ -31,7 +31,7 @@ router.post('/searchfood', (req, res) => {
 });
 
 router.post('/deletefood', (req, res) => {
-    foodModel.deletefood(req.body.foodid, (error, results) => {
+    foodModel.deletefood(req.body.bookingid, (error, results) => {
         if (error) {
             res.status(500).send('Error deleting food items' + error)
             return
@@ -57,7 +57,7 @@ router.post('/bookfood', async (req, res) => {
     jwt.verify(token, "inchimalaUserLogin", async (error, decoded) => {
         if (decoded && decoded.email) {
             try {
-                const { userid, foodItems } = req.body; // Expecting an array of { foodid, quantity }
+                const { userid, foodItems } = req.body; // Expecting an array of { bookingid, quantity }
 
                 if (!userid || !foodItems || !Array.isArray(foodItems) || foodItems.length === 0) {
                     return res.status(400).json({ error: 'Please provide user ID and an array of food items with quantities' });
@@ -82,11 +82,11 @@ router.post('/bookfood', async (req, res) => {
                 // Retrieve food details and calculate total price
                 for (const item of foodItems) {
                     const foodDetails = await new Promise((resolve, reject) => {
-                        foodModel.getFoodDetails(item.foodid, (error, foodDetails) => {
+                        foodModel.getFoodDetails(item.bookingid, (error, foodDetails) => {
                             if (error) {
                                 reject(error);
                             } else if (!foodDetails) {
-                                reject(new Error('Food not found: ' + item.foodid));
+                                reject(new Error('Food not found: ' + item.bookingid));
                             } else {
                                 resolve(foodDetails);
                             }
@@ -129,7 +129,7 @@ router.post('/bookfood', async (req, res) => {
                 const bookingDetailsData = foodDetailsArray.map(item => ({
                     userid,
                     bookingid: bookingId, // Include booking ID
-                    foodid: item.foodDetails.foodid,
+                    bookingid: item.foodDetails.bookingid,
                     quantity: item.quantity,
                     priceforsingleitem: item.price
                 }));
@@ -151,7 +151,7 @@ router.post('/bookfood', async (req, res) => {
                     bookingid: bookingId,
                     totalprice: totalPrice,
                     items: foodDetailsArray.map(item => ({
-                        foodid: item.foodDetails.foodid,
+                        bookingid: item.foodDetails.bookingid,
                         foodname: item.foodDetails.name,
                         quantity: item.quantity,
                         totalprice: item.quantity * item.foodDetails.price
@@ -189,8 +189,8 @@ router.post('/rejectFoodBooking', (req, res) => {
     jwt.verify(token, "inchimalaCaretakerLogin", async (error, decoded) => {
         if (decoded && decoded.email) {
 
-            var foodid = req.body.foodid
-            foodModel.rejectFoodBooking(foodid, (error, results) => {
+            var bookingid = req.body.bookingid
+            foodModel.rejectFoodBooking(bookingid, (error, results) => {
                 if (error) {
                     res.status(500).send('Error retrieving  data');
                     return;
@@ -199,7 +199,7 @@ router.post('/rejectFoodBooking', (req, res) => {
                     res.status(200).json(results[0]);
                 }
                 else {
-                    res.status(404).send(`Booking rejected with ID : ${foodid}`);
+                    res.status(404).send(`Booking rejected with ID : ${bookingid}`);
                 }
             });
         }
@@ -227,35 +227,48 @@ router.post('/viewfood', (req, res) => {
     })
 });
 
-//Accept Food Booking
+
+// Accept Food Booking
 router.post('/acceptFoodBooking', (req, res) => {
+    const token = req.headers["token"];
 
-    const token = req.headers["token"]
-    jwt.verify(token, "inchimalaCaretakerLogin", async (error, decoded) => {
+    // Verify the JWT token
+    jwt.verify(token, "inchimalaCaretakerLogin", (error, decoded) => {
+        if (error) {
+            return res.status(401).json({ status: "Unauthorized user" });
+        }
+
+        // Ensure the token contains the required caretaker ID
         if (decoded && decoded.email) {
+            const email = decoded.email;
+            const { caretakerid,bookingid } = req.body;
 
-            var foodid = req.body.foodid
-            foodModel.acceptFoodBooking(foodid, (error, results) => {
+            // Validate the presence of booking ID and caretaker ID
+            if (!bookingid) {
+                return res.status(400).send('Booking ID is required');
+            }
+
+            // Update the booking status using the booking ID and caretaker ID
+            foodModel.acceptFoodBooking(caretakerid, bookingid, (error, results) => {
                 if (error) {
-                    res.status(500).send('Error retrieving  data');
-                    return;
+                    console.error("Database error:", error);
+                    return res.status(500).json({ status: 'Error updating food booking data' });
                 }
-                if (results.length > 0) {
-                    res.status(200).json(results[0]);
-                }
-                else {
-                    res.status(404).send(`Booking accepted with ID : ${foodid}`);
+
+                // Check the number of affected rows to determine success
+                if (results.affectedRows > 0) {
+
+                    return res.json({ status: `Food booking accepted with ID: ${bookingid}` });
+                } else {
+                    return res.json({ status: `Booking not found with ID: ${bookingid}` });
                 }
             });
+        } else {
+            return res.status(401).json({ status: "Unauthorized user" });
         }
-
-        else {
-            res.json(
-                { status: "unauthorized user" }
-            )
-        }
-    })
+    });
 });
+
 
 //update food booking status
 
@@ -340,10 +353,10 @@ router.post('/viewCurrentFoodOrders', (req, res) => {
 });
 
 router.post('/updatefood', upload.single('photo'), async (req, res) => {
-    const foodId = req.body.foodid;
+    const bookingid = req.body.bookingid;
     const newData = req.body;
 
-    if (!foodId) {
+    if (!bookingid) {
         return res.status(400).send('Food ID is missing');
     }
 
@@ -351,13 +364,13 @@ router.post('/updatefood', upload.single('photo'), async (req, res) => {
         newData.photo = req.file.filename; // Save the filename in the food data
     }
 
-    foodModel.updateFood(foodId, newData, (error, results) => {
+    foodModel.updateFood(bookingid, newData, (error, results) => {
         if (error) {
             res.status(500).send('Error updating food: ' + error);
             return;
         }
 
-        res.status(200).send(`Food with ID ${foodId} updated successfully`);
+        res.status(200).send(`Food with ID ${bookingid} updated successfully`);
     });
 });
 
