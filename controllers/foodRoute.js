@@ -227,36 +227,6 @@ router.post('/viewfood', (req, res) => {
     })
 });
 
-// Accept Food Booking
-// router.post('/acceptFoodBooking', (req, res) => {
-
-//     const token = req.headers["token"]
-//     jwt.verify(token, "inchimalaCaretakerLogin", async (error, decoded) => { 
-//         if (decoded && decoded.email) {
-
-//             var bookingid = req.body.bookingid
-//             foodModel.acceptFoodBooking(bookingid, (error, results) => {
-//                 if (error) {
-//                     res.status(500).send('Error retrieving  data');
-//                     return;
-//                 }
-//                 if (results.length > 0) {
-//                     res.status(200).json(results[0]);
-//                 }
-//                 else {
-//                     res.status(404).send(`Booking accepted with ID : ${bookingid}`);
-//                 }
-//             });
-//         }
-
-//         else {
-//             res.json(
-//                 { status: "unauthorized user" }
-//             )
-//         }
-//     })
-// });
-
 
 // Accept Food Booking
 router.post('/acceptFoodBooking', (req, res) => {
@@ -269,9 +239,9 @@ router.post('/acceptFoodBooking', (req, res) => {
         }
 
         // Ensure the token contains the required caretaker ID
-        if (decoded && decoded.caretakerid) {
-            const caretakerid = decoded.caretakerid;
-            const { bookingid } = req.body;
+        if (decoded && decoded.email) {
+            const email = decoded.email;
+            const { caretakerid,bookingid } = req.body;
 
             // Validate the presence of booking ID and caretaker ID
             if (!bookingid) {
