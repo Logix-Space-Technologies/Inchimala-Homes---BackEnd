@@ -183,34 +183,46 @@ router.get('/viewFoodBooking', (req, res) => {
     })
 });
 
-//Reject Food Booking
-router.post('/rejectFoodBooking', (req, res) => {
-    const token = req.headers["token"]
-    jwt.verify(token, "inchimalaCaretakerLogin", async (error, decoded) => {
-        if (decoded && decoded.email) {
 
-            var bookingid = req.body.bookingid
-            foodModel.rejectFoodBooking(bookingid, (error, results) => {
+// Reject Food Booking
+router.post('/rejectFoodBooking', (req, res) => {
+    const token = req.headers["token"];
+
+    // Verify the JWT token
+    jwt.verify(token, "inchimalaCaretakerLogin", (error, decoded) => {
+        if (error) {
+            return res.status(401).json({ status: "Unauthorized user" });
+        }
+
+        // Ensure the token contains the required caretaker ID
+        if (decoded && decoded.email) {
+            const email = decoded.email;
+            const { caretakerid,bookingid } = req.body;
+
+            // Validate the presence of booking ID and caretaker ID
+            if (!bookingid) {
+                return res.status(400).send('Booking ID is required');
+            }
+
+            // Update the booking status using the booking ID and caretaker ID
+            foodModel.rejectFoodBooking(caretakerid, bookingid, (error, results) => {
                 if (error) {
-                    res.status(500).send('Error retrieving  data');
-                    return;
+                    console.error("Database error:", error);
+                    return res.status(500).json({ status: 'Error updating food booking data' });
                 }
-                if (results.length > 0) {
-                    res.status(200).json(results[0]);
-                }
-                else {
-                    res.status(404).send(`Booking rejected with ID : ${bookingid}`);
+
+                // Check the number of affected rows to determine success
+                if (results.affectedRows > 0) {
+
+                    return res.json({ status: `Food booking rejected with ID: ${bookingid}` });
+                } else {
+                    return res.json({ status: `Booking not found with ID: ${bookingid}` });
                 }
             });
+        } else {
+            return res.status(401).json({ status: "Unauthorized user" });
         }
-        else {
-
-            res.json(
-                { status: "unauthorized user" }
-            )
-
-        }
-    })
+    });
 });
 
 
