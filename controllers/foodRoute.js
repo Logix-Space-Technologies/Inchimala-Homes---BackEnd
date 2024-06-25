@@ -231,7 +231,7 @@ router.post('/viewfood', (req, res) => {
 router.post('/acceptFoodBooking', (req, res) => {
 
     const token = req.headers["token"]
-    jwt.verify(token, "inchimalaCaretakerLogin", async (error, decoded) => {
+    jwt.verify(token, "inchimalaCaretakerLogin", async (error, decoded) => { 
         if (decoded && decoded.email) {
 
             var foodid = req.body.foodid
