@@ -57,7 +57,7 @@ router.post('/bookfood', async (req, res) => {
     jwt.verify(token, "inchimalaUserLogin", async (error, decoded) => {
         if (decoded && decoded.email) {
             try {
-                const { userid, foodItems } = req.body; // Expecting an array of { bookingid, quantity }
+                const { userid, foodItems } = req.body; // Expecting an array of { foodid, quantity }
 
                 if (!userid || !foodItems || !Array.isArray(foodItems) || foodItems.length === 0) {
                     return res.status(400).json({ error: 'Please provide user ID and an array of food items with quantities' });
@@ -82,11 +82,11 @@ router.post('/bookfood', async (req, res) => {
                 // Retrieve food details and calculate total price
                 for (const item of foodItems) {
                     const foodDetails = await new Promise((resolve, reject) => {
-                        foodModel.getFoodDetails(item.bookingid, (error, foodDetails) => {
+                        foodModel.getFoodDetails(item.foodid, (error, foodDetails) => {
                             if (error) {
                                 reject(error);
                             } else if (!foodDetails) {
-                                reject(new Error('Food not found: ' + item.bookingid));
+                                reject(new Error('Food not found: ' + item.foodid));
                             } else {
                                 resolve(foodDetails);
                             }
@@ -129,7 +129,7 @@ router.post('/bookfood', async (req, res) => {
                 const bookingDetailsData = foodDetailsArray.map(item => ({
                     userid,
                     bookingid: bookingId, // Include booking ID
-                    bookingid: item.foodDetails.bookingid,
+                    foodid: item.foodDetails.foodid,
                     quantity: item.quantity,
                     priceforsingleitem: item.price
                 }));
@@ -151,7 +151,7 @@ router.post('/bookfood', async (req, res) => {
                     bookingid: bookingId,
                     totalprice: totalPrice,
                     items: foodDetailsArray.map(item => ({
-                        bookingid: item.foodDetails.bookingid,
+                        foodid: item.foodDetails.foodid,
                         foodname: item.foodDetails.name,
                         quantity: item.quantity,
                         totalprice: item.quantity * item.foodDetails.price
@@ -170,6 +170,7 @@ router.post('/bookfood', async (req, res) => {
         }
     });
 });
+
 
 
 
@@ -196,7 +197,7 @@ router.post('/rejectFoodBooking', (req, res) => {
 
         // Ensure the token contains the required caretaker ID
         if (decoded && decoded.email) {
-            const email = decoded.email;
+            
             const { caretakerid,bookingid } = req.body;
 
             // Validate the presence of booking ID and caretaker ID
@@ -252,7 +253,7 @@ router.post('/acceptFoodBooking', (req, res) => {
 
         // Ensure the token contains the required caretaker ID
         if (decoded && decoded.email) {
-            const email = decoded.email;
+            
             const { caretakerid,bookingid } = req.body;
 
             // Validate the presence of booking ID and caretaker ID
