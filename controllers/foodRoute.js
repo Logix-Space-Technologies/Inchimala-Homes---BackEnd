@@ -11,7 +11,6 @@ const jwt = require("jsonwebtoken")
 
 //router to search food
 
-
 router.post('/searchfood', (req, res) => {
     const { type } = req.body; // Extract type from request body
     if (!type) {
