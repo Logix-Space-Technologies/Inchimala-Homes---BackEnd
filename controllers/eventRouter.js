@@ -27,20 +27,35 @@ const upload = multer({
     }
 });
 
-router.post('/addevent',  upload.single('file'), (req, res, next) => {
-    if (!req.file) {
-        return res.status(400).json({ error: 'No file uploaded' }); 
-    }
-    const { filename: imagePath } = req.file;
+router.post('/addevent', upload.single('file'), (req, res, next) => {
+    const token = req.headers["token"]
+    jwt.verify(token, "inchimalaAdminLogin", async (error, decoded) => {
 
-    eventModel.insertEvent(req.body.name,req.body.description,req.body.price,req.body.addedBy,imagePath, (error, results) => {
-        if (error) {
-            res.status(500).send('Error inserting caretaker data' + error);
-            return;
+        if (decoded && decoded.email) {
+            try {
+                if (!req.file) {
+                    return res.status(400).json({ error: 'No file uploaded' });
+                }
+                const { filename: imagePath } = req.file;
+
+                eventModel.insertEvent(req.body.name, req.body.description, req.body.price, req.body.addedBy, imagePath, (error, results) => {
+                    if (error) {
+                        res.status(500).send('Error inserting caretaker data' + error);
+                        return;
+                    }
+                    //adminModel.logAdminAction(admin.adminid, 'Admin added activity')
+                    res.status(201).send(`Event added with ID : ${results.insertId}`);
+                });
+            } catch (err) {
+                res.status(500).json({ error: err.message })
+            }
         }
-        adminModel.logAdminAction(admin.adminid, 'Admin added activity')
-        res.status(201).send(`Event added with ID : ${results.insertId}`);
-    });
+        else {
+            res.json(
+                { status: "unauthorized user" }
+            )
+        }
+    })
 });
 
 router.post('/searchactivity', (req, res) => {
@@ -63,25 +78,40 @@ router.post('/searchactivity', (req, res) => {
 
 
 router.post('/updateEvent', upload.single('file'), async (req, res) => {
-    const activityId = req.body.activityid;
-    const eventData = req.body;
-    console.log(activityId);
-    console.log(eventData);
+    const token = req.headers["token"]
+    jwt.verify(token, "inchimalaAdminLogin", async (error, decoded) => {
 
-    if (req.file) {
-        eventData.photo = req.file.filename;
-        console.log(eventData);  // Save the filename in the event data
-    }
-    delete eventData.file;
-    console.log(eventData);
-    eventModel.updateEvent(activityId, eventData, (error, results) => {
-        if (error) {
-            res.status(500).send('Error updating event data: ' + error);
-            return;
+        if (decoded && decoded.email) {
+            try {
+                const activityId = req.body.activityid;
+                const eventData = req.body;
+                console.log(activityId);
+                console.log(eventData);
+
+                if (req.file) {
+                    eventData.photo = req.file.filename;
+                    console.log(eventData);  // Save the filename in the event data
+                }
+                delete eventData.file;
+                console.log(eventData);
+                eventModel.updateEvent(activityId, eventData, (error, results) => {
+                    if (error) {
+                        res.status(500).send('Error updating event data: ' + error);
+                        return;
+                    }
+
+                    res.status(200).send('Event with ID ${activityId} updated successfully');
+                });
+            } catch (err) {
+                res.status(500).json({ error: err.message })
+            }
         }
-
-        res.status(200).send('Event with ID ${activityId} updated successfully');
-    });
+        else {
+            res.json(
+                { status: "unauthorized user" }
+            )
+        }
+    })
 });
 
 
@@ -90,21 +120,36 @@ router.post('/updateEvent', upload.single('file'), async (req, res) => {
 //to delete event
 
 router.post('/deleteEvent', (req, res) => {
-    const { activityid } = req.body; // Extract activityid from the request body
+    const token = req.headers["token"]
+    jwt.verify(token, "inchimalaAdminLogin", async (error, decoded) => {
 
-    eventModel.deleteEvent(activityid, (error, results) => {
-        if (!activityid) {
-            return res.status(400).send('Activity ID is required');
+        if (decoded && decoded.email) {
+            try {
+                const { activityid } = req.body; // Extract activityid from the request body
+
+                eventModel.deleteEvent(activityid, (error, results) => {
+                    if (!activityid) {
+                        return res.status(400).send('Activity ID is required');
+                    }
+                    if (error) {
+                        return res.status(500).send('Error deleting event: ' + error);
+                    }
+                    if (results.affectedRows === 0) {
+                        return res.status(404).send('No event found with the given ID');
+                    }
+                    // adminModel.logAdminAction(adminid, 'Admin deleted activity')
+                    res.status(200).send(`Event deleted with ID: ${activityid}`);
+                });
+            } catch (err) {
+                res.status(500).json({ error: err.message })
+            }
         }
-        if (error) {
-            return res.status(500).send('Error deleting event: ' + error);
+        else {
+            res.json(
+                { status: "unauthorized user" }
+            )
         }
-        if (results.affectedRows === 0) {
-            return res.status(404).send('No event found with the given ID');
-        }
-        // adminModel.logAdminAction(adminid, 'Admin deleted activity')
-        res.status(200).send(`Event deleted with ID: ${activityid}`);
-    });
+    })
 });
 
 //to view events
@@ -173,7 +218,7 @@ router.post('/acceptActivityBooking', (req, res) => {
 });
 
 
-   
+
 
 
 
@@ -211,9 +256,9 @@ router.get('/viewCurrentEvents', (req, res) => {
 });
 
 router.post('/viewuseractivity', (req, res) => {
-    eventModel.viewuserActivities(req.body.userid,(error, results) => {
+    eventModel.viewuserActivities(req.body.userid, (error, results) => {
         if (error) {
-            res.json({status:'Error retrieving accepted and ongoing activities'});
+            res.json({ status: 'Error retrieving accepted and ongoing activities' });
             return;
         }
         res.status(200).json(results);
@@ -280,7 +325,7 @@ router.post('/viewuseractivity', (req, res) => {
 //             }
 
 
-       
+
 //     });
 
 

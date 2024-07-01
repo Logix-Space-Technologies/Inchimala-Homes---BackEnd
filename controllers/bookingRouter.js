@@ -8,26 +8,41 @@ const jwt = require("jsonwebtoken")
 
 //Accept Booking
 router.post('/acceptBooking', (req, res) => {
-    const { bookingid, adminid } = req.body;
+    const token = req.headers["token"]
+    jwt.verify(token, "inchimalaAdminLogin", async (error, decoded) => {
+
+        if (decoded && decoded.email) {
+            try {
+                const { bookingid, adminid } = req.body;
 
 
-    if (!bookingid || !adminid) {
-        res.status(400).send('Booking ID and Admin ID are required');
-        return;
-    }
+                if (!bookingid || !adminid) {
+                    res.status(400).send('Booking ID and Admin ID are required');
+                    return;
+                }
 
-    bookingModel.acceptBooking(bookingid, adminid, (error, results) => {
-        if (error) {
-            res.json({status:'Error updating booking data'})
-            return;
+                bookingModel.acceptBooking(bookingid, adminid, (error, results) => {
+                    if (error) {
+                        res.json({ status: 'Error updating booking data' })
+                        return;
+                    }
+                    if (results.affectedRows > 0) {
+                        adminModel.logAdminAction(adminid, `Admin accept room booking of booking id ${bookingid}`)
+                        res.json({ status: `Booking accepted with ID: ${bookingid}` })
+                    } else {
+                        res.json({ status: `Booking not found with ID: ${bookingid}` })
+                    }
+                });
+            } catch (err) {
+                res.status(500).json({ error: err.message })
+            }
         }
-        if (results.affectedRows > 0) {
-            adminModel.logAdminAction(adminid, `Admin accept room booking of booking id ${bookingid}`)
-            res.json({status :`Booking accepted with ID: ${bookingid}`})
-        } else {
-            res.json({status:`Booking not found with ID: ${bookingid}`})
+        else {
+            res.json(
+                { status: "unauthorized user" }
+            )
         }
-    });
+    })
 });
 
 
@@ -44,25 +59,41 @@ router.post('/viewRoomBooking', (req, res) => {
 
 //Reject Booking
 router.post('/rejectBooking', (req, res) => {
-    const { bookingid, adminid } = req.body
+    const token = req.headers["token"]
+    jwt.verify(token, "inchimalaAdminLogin", async (error, decoded) => {
 
-    if (!bookingid || !adminid) {
-        res.status(400).send('Booking ID and Admin ID are required');
-        return;
-    }
+        if (decoded && decoded.email) {
+            try {
+                const { bookingid, adminid } = req.body
 
-    bookingModel.rejectBooking(bookingid, adminid, (error, results) => {
-        if (error) {
-            res.json({status:'Error updating booking data'})
-            return;
+                if (!bookingid || !adminid) {
+                    res.status(400).send('Booking ID and Admin ID are required');
+                    return;
+                }
+
+                bookingModel.rejectBooking(bookingid, adminid, (error, results) => {
+                    if (error) {
+                        res.json({ status: 'Error updating booking data' })
+                        return;
+                    }
+                    if (results.affectedRows > 0) {
+                        adminModel.logAdminAction(adminid, `Admin reject room booking of booking id ${bookingid}`)
+                        res.status(200).json({ status: `Booking Rejected with ID: ${bookingid}` })
+                    } else {
+                        res.json({ status: `Booking not found with ID: ${bookingid}` })
+                    }
+
+                });
+            } catch (err) {
+                res.status(500).json({ error: err.message })
+            }
         }
-        if (results.affectedRows > 0) {
-            adminModel.logAdminAction(adminid, `Admin reject room booking of booking id ${bookingid}`)
-            res.status(200).json({status :`Booking Rejected with ID: ${bookingid}`})
-        } else {
-            res.json({status:`Booking not found with ID: ${bookingid}`})
+        else {
+            res.json(
+                { status: "unauthorized user" }
+            )
         }
-    });
+    })
 });
 
 
