@@ -171,7 +171,15 @@ router.post('/acceptActivityBooking', (req, res) => {
 
     });
 });
-
+router.get('/viewRejectedActivityBooking', (req, res) => {
+    eventModel.viewRejectedActivityBooking((error, results) => {
+        if (error) {
+            res.status(500).send('Error retrieving rejected activities: ' + error);
+            return;
+        }
+        res.status(200).json(results);
+    });
+}); 
 
    
 

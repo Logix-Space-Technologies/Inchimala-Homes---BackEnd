@@ -72,6 +72,10 @@ const eventModel = {
         const query = 'SELECT * FROM activity WHERE activityid = ? AND deleteFlag != 1';
         pool.query(query, [activityid], callback);
     },
+    viewRejectedActivityBooking: (callback) => {
+        const query = 'SELECT * FROM activitybooking WHERE status = 2'; // Assuming 2 is the status for rejected bookings
+        pool.query(query, callback);
+    },
     
     
 
