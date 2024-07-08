@@ -32,28 +32,56 @@ const bookingModel = {
         pool.query(query, callback);
     },
 
-    datecheck: (checkin, checkout, callback) => {
-        const query = `
-            SELECT b.packageid 
-            FROM booking b
-            INNER JOIN booking_dates_availability bda ON b.packageid = bda.packageid
-            WHERE bda.date >= ? AND bda.date <= ?
-              AND ((b.checkin >= ? AND b.checkin <= ?) OR (b.checkout >= ? AND b.checkout <= ?) OR (b.checkin <= ? AND b.checkout >= ?))
-              AND b.status = "1"
-        `;
-        pool.query(query, [checkin, checkout, checkin, checkout, checkin, checkout, checkin, checkout], callback);
-    },
+    // datecheck: (checkin, checkout, callback) => {
+    //     const query = `
+    //         SELECT b.packageid 
+    //         FROM booking b
+    //         INNER JOIN booking_dates_availability bda ON b.packageid = bda.packageid
+    //         WHERE bda.date >= ? AND bda.date <= ?
+    //           AND ((b.checkin >= ? AND b.checkin <= ?) OR (b.checkout >= ? AND b.checkout <= ?) OR (b.checkin <= ? AND b.checkout >= ?))
+    //           AND b.status = "1"
+    //     `;
+    //     pool.query(query, [checkin, checkout, checkin, checkout, checkin, checkout, checkin, checkout], callback);
+    // },
     
 
-    RoomBooking: (BookingData, callback) => {
-        const query = 'INSERT INTO booking SET ?';
-        pool.query(query, BookingData, callback)
-    },
+    // RoomBooking: (BookingData, callback) => {
+    //     const query = 'INSERT INTO booking SET ?';
+    //     pool.query(query, BookingData, callback)
+    // },
 
     viewRejectedBooking: (callback) => {
         const query = 'SELECT booking.*,user.name AS username,user.photo,user.contactno,package.name FROM booking INNER JOIN user ON booking.userid=user.userid INNER JOIN package ON booking.packageid=package.packageid WHERE booking.deleteFlag="1"'; // Filter by rejected bookings
         pool.query(query, callback);
+    },
+    checkAvailability : (packageid, checkin, checkout, rooms, callback) => {
+        const sql = `
+            SELECT 
+                bda.date, bda.amount - IFNULL(SUM(b.rooms), 0) AS available_rooms
+            FROM 
+                booking_dates_availability bda
+            LEFT JOIN 
+                booking b ON b.packageid = bda.packageid AND bda.date BETWEEN b.checkin AND b.checkout
+            WHERE 
+                bda.packageid = ? AND bda.date BETWEEN ? AND ?
+            GROUP BY 
+                bda.date
+            HAVING 
+                available_rooms >= ?
+        `;
+        pool.query(sql, [packageid, checkin, checkout, rooms], callback);
+    },
+    
+    // Book a room
+     bookRoom : (userid, packageid, checkin, checkout, rooms, adult, children, status, addedBy, updatedBy, callback) => {
+        const sql = `
+            INSERT INTO booking 
+            (userid, packageid, checkin, checkout, rooms, adult, children, status, deleteFlag, activeFlag, addedDate, updatedDate, addedBy, updatedBy)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, FALSE, TRUE, NOW(), NOW(), ?, ?)
+        `;
+        pool.query(sql, [userid, packageid, checkin, checkout, rooms, adult, children, status, addedBy, updatedBy], callback);
     }
+    
 
 
 }

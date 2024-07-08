@@ -143,36 +143,50 @@ router.post('/datecheck', (req, res) => {
     });
 });
 
+// router.post('/roombooking', (req, res) => {
+
+//     const token = req.headers["token"]
+//     jwt.verify(token, "inchimalaUserLogin", async (error, decoded) => {
+
+//         if (decoded && decoded.email) {
+
+//             bookingModel.RoomBooking(req.body, (error, results) => {
+//                 if (error) {
+//                     res.status(500).send('Booking unsuccessfull' + error)
+//                     return
+//                 }
+//                 res.status(200).send(`Booking successfull : ${results.insertId}`)
+//             })
+
+//         } else {
+
+//             res.json(
+//                 { status: "unauthorized user" }
+//             )
+
+//         }
+//     })
+
+
+
+// });
+
+
 router.post('/roombooking', (req, res) => {
+    const { userid, packageid, checkin, checkout, rooms, adult, children, status, addedBy, updatedBy } = req.body;
 
-    const token = req.headers["token"]
-    jwt.verify(token, "inchimalaUserLogin", async (error, decoded) => {
-
-        if (decoded && decoded.email) {
-
-            bookingModel.RoomBooking(req.body, (error, results) => {
-                if (error) {
-                    res.status(500).send('Booking unsuccessfull' + error)
-                    return
-                }
-                res.status(200).send(`Booking successfull : ${results.insertId}`)
-            })
-
-        } else {
-
-            res.json(
-                { status: "unauthorized user" }
-            )
-
+    bookingModel.checkAvailability(packageid, checkin, checkout, rooms, (err, results) => {
+        if (err) throw err;
+        if (results.length === 0) {
+            return res.status(400).send({ message: 'No availability for the selected dates' });
         }
-    })
 
-
-
+        bookingModel.bookRoom(userid, packageid, checkin, checkout, rooms, adult, children, status, addedBy, updatedBy, (err, result) => {
+            if (err) throw err;
+            res.send({ message: 'Room booked successfully', bookingid: result.insertId });
+        });
+    });
 });
-
-
-
 
 // View Rejected Booking
 

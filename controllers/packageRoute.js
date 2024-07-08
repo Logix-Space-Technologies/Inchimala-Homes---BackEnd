@@ -105,26 +105,43 @@ router.post('/viewpackage', (req, res) => {
     })
 });
  
+// router.post('/scheduler', (req, res) => {
+//     const { packageid, date, amount } = req.body;
+//     packageModel.schedulePackage(packageid, date, amount, (error, results) => {
+//         if (error) {
+//             res.status(500).send('Error inserting package data: ' + error);
+//             return;
+//         }
+//         res.status(200).json({ status: "package scheduled" });
+//     });
+// });
+
+// router.post('/updateScheduler', (req, res) => {
+//     const { id, packageid, date, amount } = req.body;
+//     packageModel.updateSchedule(id, packageid, date, amount, (error, results) => {
+//         if (error) {
+//             res.status(500).send('Error updating schedule data: ' + error);
+//             return;
+//         }
+//         res.status(200).json({ status: "schedule updated" });
+//     });
+// });
+
+
 router.post('/scheduler', (req, res) => {
     const { packageid, date, amount } = req.body;
-    packageModel.schedulePackage(packageid, date, amount, (error, results) => {
-        if (error) {
-            res.status(500).send('Error inserting package data: ' + error);
-            return;
-        }
-        res.status(200).json({ status: "package scheduled" });
+    packageModel.insertBookingDateAvailability(packageid, date, amount, (err, result) => {
+        if (err) throw err;
+        res.send({ message: 'Data inserted successfully', id: result.insertId });
     });
 });
 
 router.post('/updateScheduler', (req, res) => {
-    const { id, packageid, date, amount } = req.body;
-    packageModel.updateSchedule(id, packageid, date, amount, (error, results) => {
-        if (error) {
-            res.status(500).send('Error updating schedule data: ' + error);
-            return;
-        }
-        res.status(200).json({ status: "schedule updated" });
+    const { id } = req.params;
+    const { packageid, date, amount } = req.body;
+    packageModel.updateBookingDateAvailability(id, packageid, date, amount, (err, result) => {
+        if (err) throw err;
+        res.send({ message: 'Data updated successfully' });
     });
 });
-
 module.exports=router

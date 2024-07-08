@@ -42,17 +42,27 @@ const packageModel={
         const query = `SELECT * FROM package WHERE packageid NOT IN (${placeholders})`;
         pool.query(query, packageIds, callback);
         },
-    schedulePackage: (packageid, date, amount, callback) => {
-        const query = 'INSERT INTO booking_dates_availability (packageid, date, amount) VALUES ((SELECT packageid FROM package WHERE packageid = ?), ?, ?)';
+    // schedulePackage: (packageid, date, amount, callback) => {
+    //     const query = 'INSERT INTO booking_dates_availability (packageid, date, amount) VALUES ((SELECT packageid FROM package WHERE packageid = ?), ?, ?)';
+    //     pool.query(query, [packageid, date, amount], callback);
+    // },
+    // updateSchedule: (id, packageid, date, amount, callback) => {
+    //     const query = `
+    //         UPDATE booking_dates_availability SET packageid = (SELECT packageid FROM package WHERE packageid = ?), date = ?, amount = ? 
+    //         WHERE id = ?
+    //     `;
+    //     pool.query(query, [packageid, date, amount, id], callback);
+    // },
+    insertBookingDateAvailability : (packageid, date, amount, availability, callback) => {
+        const query = 'INSERT INTO booking_dates_availability (packageid, date, amount, availability) VALUES (?, ?, ?, ?)';
         pool.query(query, [packageid, date, amount], callback);
     },
-    updateSchedule: (id, packageid, date, amount, callback) => {
-        const query = `
-            UPDATE booking_dates_availability SET packageid = (SELECT packageid FROM package WHERE packageid = ?), date = ?, amount = ? 
-            WHERE id = ?
-        `;
+    
+    // Update data in booking_dates_availability
+    updateBookingDateAvailability :(id, packageid, date, amount, availability, callback) => {
+        const query = 'UPDATE booking_dates_availability SET packageid = ?, date = ?, amount = ?, availability = ? WHERE id = ?';
         pool.query(query, [packageid, date, amount, id], callback);
-    },
+    }
 }
 
 
