@@ -24,6 +24,10 @@ const packageModel={
         pool.query(query,[packageid],callback)
     },
 
+
+
+
+
     updatePackage: (packageid, newData, callback) => {
         const query = 'UPDATE package SET ? WHERE packageid = ?';
         pool.query(query, [newData, packageid],callback) 

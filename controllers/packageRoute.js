@@ -65,6 +65,44 @@ router.post('/deletePackage', (req, res) => {
     });
 });
 
+
+
+router.post('/PackageDelete', (req, res) => {
+    const token = req.headers["token"]
+    jwt.verify(token, "inchimalaAdminLogin", async (error, decoded) => {
+
+        if (decoded && decoded.email) {
+            try {
+                const { packageid } = req.body; // Extract packageid from the request body
+
+                packageModel.deletePackage(packageid, (error, results) => {
+                    if (!packageid) {
+                        return res.status(400).send('Package ID is required');
+                    }
+                    if (error) {
+                        return res.status(500).send('Error deleting package: ' + error);
+                    }
+                    if (results.affectedRows === 0) {
+                        return res.status(404).send('No package found with the given ID');
+                    }
+                    
+                    res.status(200).send(`Package deleted with ID: ${packageid}`);
+                });
+            } catch (err) {
+                res.status(500).json({ error: err.message })
+            }
+        }
+        else {
+            res.json(
+                { status: "unauthorized user" }
+            )
+        }
+    })
+});
+
+
+
+
 router.post('/updatepackage', upload.single('photo'), async (req, res) => {
     try {
       const { packageid, name, description, price } = req.body;
