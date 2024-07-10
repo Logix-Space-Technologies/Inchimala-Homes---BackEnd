@@ -187,6 +187,49 @@ router.post('/rejectActivityBooking', (req, res) => {
 });
 
 
+// Reject Activity Booking
+router.post('/RejectActivityBooking', (req, res) => {
+    const token = req.headers["token"];
+
+    // Verify the JWT token
+    jwt.verify(token, "inchimalaCaretakerLogin", (error, decoded) => {
+        if (error) {
+            return res.status(401).json({ status: "Unauthorized user" });
+        }
+
+        // Ensure the token contains the required caretaker ID
+        if (decoded && decoded.email) {
+            
+            const { caretakerid,bookingid } = req.body;
+
+            // Validate the presence of booking ID and caretaker ID
+            if (!bookingid) {
+                return res.status(400).send('Booking ID is required');
+            }
+
+            // Update the booking status using the booking ID and caretaker ID
+            eventModel.rejectbookingactivity(caretakerid, bookingid, (error, results) => {
+                if (error) {
+                    console.error("Database error:", error);
+                    return res.status(500).json({ status: 'Error updating activity booking data' });
+                }
+
+                // Check the number of affected rows to determine success
+                if (results.affectedRows > 0) {
+
+                    return res.json({ status: `Activity booking rejected with ID: ${bookingid}` });
+                } else {
+                    return res.json({ status: `Booking not found with ID: ${bookingid}` });
+                }
+            });
+        } else {
+            return res.status(401).json({ status: "Unauthorized user" });
+        }
+    });
+});
+
+
+
 //Accept Activity Booking
 router.post('/acceptActivityBooking', (req, res) => {
     var id = req.body.id
@@ -216,6 +259,49 @@ router.post('/acceptActivityBooking', (req, res) => {
 
     });
 });
+
+// Accept Activity Booking
+router.post('/AcceptActivityBooking', (req, res) => {
+    const token = req.headers["token"];
+
+    // Verify the JWT token
+    jwt.verify(token, "inchimalaCaretakerLogin", (error, decoded) => {
+        if (error) {
+            return res.status(401).json({ status: "Unauthorized user" });
+        }
+
+        // Ensure the token contains the required caretaker ID
+        if (decoded && decoded.email) {
+            
+            const { caretakerid,bookingid } = req.body;
+
+            // Validate the presence of booking ID and caretaker ID
+            if (!bookingid) {
+                return res.status(400).send('Booking ID is required');
+            }
+
+            // Update the booking status using the booking ID and caretaker ID
+            eventModel.acceptbookingactivity(caretakerid, bookingid, (error, results) => {
+                if (error) {
+                    console.error("Database error:", error);
+                    return res.status(500).json({ status: 'Error updating activity booking data' });
+                }
+
+                // Check the number of affected rows to determine success
+                if (results.affectedRows > 0) {
+
+                    return res.json({ status: `Activity booking accepted with ID: ${bookingid}` });
+                } else {
+                    return res.json({ status: `Booking not found with ID: ${bookingid}` });
+                }
+            });
+        } else {
+            return res.status(401).json({ status: "Unauthorized user" });
+        }
+    });
+});
+
+
 router.get('/viewRejectedActivityBooking', (req, res) => {
     eventModel.viewRejectedActivityBooking((error, results) => {
         if (error) {
@@ -272,6 +358,14 @@ router.post('/viewuseractivity', (req, res) => {
         res.status(200).json(results);
     });
 });
+
+router.get('/viewActivityBooking', (req, res) => {
+    eventModel.viewActivityBooking((error, results) => {
+        res.json(results)
+        console.log(results)
+    })
+});
+
 
 // router.post('/bookActivity', async (req, res) => {
 
