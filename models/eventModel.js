@@ -37,15 +37,33 @@ const eventModel = {
         pool.query(query, callback);
     },
 
+    viewActivityBooking: (callback) => {
+        const query = 'SELECT * FROM activitybooking';
+        pool.query(query, callback);
+    },
+
     rejectActivityBooking:(id,callback)=>{
         const query='UPDATE activitybooking set deleteFlag="1" WHERE id=?';  //pending-status(0) , accepted-status(1) , rejected-status(1)
         pool.query(query,[id],callback)
+    },
+
+    rejectbookingactivity: (caretakerid,bookingid, callback) => {
+        const query = 'UPDATE  activitybooking  SET  deleteFlag = "1", updatedby = ?, updatedDate = NOW() WHERE bookingid = ?';  // pending-status(0), accepted-status(1), rejected-status(2)
+        pool.query(query, [caretakerid, bookingid], callback);
+       
     },
 
     acceptActivityBooking:(id,callback)=>{
         const query='UPDATE activitybooking set status="1" WHERE id=?';  //pending-status(0) , accepted-status(1) , rejected-status(2)
         pool.query(query,[id],callback)
     },
+
+    acceptbookingactivity: (caretakerid,bookingid, callback) => {
+        const query = 'UPDATE activitybooking SET status = "1", updatedby = ?, updatedDate = NOW() WHERE bookingid = ?';  //pending-status(0), accepted-status(1), rejected-status(2)
+        pool.query(query, [caretakerid, bookingid], callback);
+        
+    },
+
     updateActivityBookingStatus: (id, newStatus, callback) => {
         const query = 'UPDATE activitybooking SET status=? WHERE id=?';//ongoing-status(3),completed-status(4)
         pool.query(query, [newStatus, id], callback);
