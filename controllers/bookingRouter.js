@@ -102,46 +102,46 @@ router.post('/viewAcceptedBooking', (req, res) => {
 
 
 
-router.post('/datecheck', (req, res) => {
-    const { checkin, checkout } = req.body;
+// router.post('/datecheck', (req, res) => {
+//     const { checkin, checkout } = req.body;
 
-    bookingModel.datecheck(checkin, checkout, (error, result1) => {
-        if (error) {
-            console.error("Error retrieving data:", error);
-            res.json({ status: 'Error retrieving data' });
-        } else {
-            let excludedPackageIds = [];
-            if (result1.length > 0) {
-                // Extract package IDs from all conflicting bookings
-                excludedPackageIds = result1.map(booking => booking.packageid);
-                console.log(result1)
-            }
+//     bookingModel.datecheck(checkin, checkout, (error, result1) => {
+//         if (error) {
+//             console.error("Error retrieving data:", error);
+//             res.json({ status: 'Error retrieving data' });
+//         } else {
+//             let excludedPackageIds = [];
+//             if (result1.length > 0) {
+//                 // Extract package IDs from all conflicting bookings
+//                 excludedPackageIds = result1.map(booking => booking.packageid);
+//                 console.log(result1)
+//             }
 
-            // If there are conflicting bookings, exclude them from available packages
-            if (excludedPackageIds.length > 0) {
-                packageModel.viewavailablePackage(excludedPackageIds, (error, result) => {
-                    if (error) {
-                        console.error("Error retrieving data:", error);
-                        res.json({ status: 'Error retrieving data' });
-                    } else {
-                        res.status(200).json(result);
+//             // If there are conflicting bookings, exclude them from available packages
+//             if (excludedPackageIds.length > 0) {
+//                 packageModel.viewavailablePackage(excludedPackageIds, (error, result) => {
+//                     if (error) {
+//                         console.error("Error retrieving data:", error);
+//                         res.json({ status: 'Error retrieving data' });
+//                     } else {
+//                         res.status(200).json(result);
 
-                    }
-                });
-            } else {
-                // If there are no conflicting bookings, return all packages
-                packageModel.viewPackage((error, result) => {
-                    if (error) {
-                        console.error("Error retrieving data:", error);
-                        res.json({ status: 'Error retrieving data' });
-                    } else {
-                        res.status(200).json(result);
-                    }
-                });
-            }
-        }
-    });
-});
+//                     }
+//                 });
+//             } else {
+//                 // If there are no conflicting bookings, return all packages
+//                 packageModel.viewPackage((error, result) => {
+//                     if (error) {
+//                         console.error("Error retrieving data:", error);
+//                         res.json({ status: 'Error retrieving data' });
+//                     } else {
+//                         res.status(200).json(result);
+//                     }
+//                 });
+//             }
+//         }
+//     });
+// });
 
 // router.post('/roombooking', (req, res) => {
 
@@ -170,6 +170,45 @@ router.post('/datecheck', (req, res) => {
 
 
 // });
+router.post('/datecheck', (req, res) => {
+    const { checkin, checkout, rooms } = req.body;
+
+    bookingModel.checkAvailabilityForDates(checkin, checkout, rooms, (error, availableRooms) => {
+        if (error) {
+            console.error("Error retrieving data:", error);
+            res.json({ status: 'Error retrieving data' });
+            return;
+        }
+
+        if (availableRooms.length === 0) {
+            res.status(400).json({ status: 'No rooms available for the selected dates' });
+            return;
+        }
+
+        let excludedPackageIds = availableRooms.map(booking => booking.packageid);
+
+        if (excludedPackageIds.length > 0) {
+            packageModel.viewAvailablePackage(excludedPackageIds, (error, result) => {
+                if (error) {
+                    console.error("Error retrieving data:", error);
+                    res.json({ status: 'Error retrieving data' });
+                } else {
+                    res.status(200).json(result);
+                }
+            });
+        } else {
+            packageModel.viewPackage((error, result) => {
+                if (error) {
+                    console.error("Error retrieving data:", error);
+                    res.json({ status: 'Error retrieving data' });
+                } else {
+                    res.status(200).json(result);
+                }
+            });
+        }
+    });
+});
+
 
 
 router.post('/roombooking', (req, res) => {
