@@ -54,7 +54,7 @@ const userModel = {
         return callback(null, results[0]); // Return the first user found
     });
 }
-//BOOKING FOOD
+
 
 }
 
